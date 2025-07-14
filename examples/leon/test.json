@@ -1,0 +1,37 @@
+[
+    {
+        "header": "Teil 1: Der Anfang der Faszination",
+        "content": "Leon ist 15 Jahre alt und besucht die 9. Klasse eines Gymnasiums in Hamburg. Schon seit der Grundschule hat er ein außergewöhnliches Interesse an Technik gezeigt. Während seine Klassenkameraden auf Spielkonsolen zockten, bastelte Leon an alten Laptops herum, baute sie auseinander und versuchte, sie wieder zum Laufen zu bringen. Der echte Funke aber sprang über, als er in der siebten Klasse zum ersten Mal im Informatikunterricht mit dem Programm „Scratch“ arbeitete. Obwohl die grafische Oberfläche ihm zu simpel erschien, war es die Erkenntnis, dass man dem Computer mit logischen Befehlen Aufgaben geben konnte, die ihn vollkommen faszinierte.",
+        "timestamp": "2022-09-01",
+        "source": "persönliche Erinnerung",
+        "summary": "Leon entdeckt in der Schule seine Begeisterung für Informatik, besonders durch das Programm Scratch."
+    },
+    {
+        "header": "Teil 2: Erste Projekte und Herausforderungen",
+        "content": "Mit 13 brachte sich Leon eigenständig die Grundlagen von Python bei. Er nutzte YouTube-Tutorials, kostenlose Online-Kurse und dokumentierte seine Fortschritte in einem eigenen Blog. Eines seiner ersten Projekte war ein einfaches Textadventure-Spiel, das er später zu einem Mini-Rollenspiel mit Inventarsystem und Entscheidungsbäumen erweiterte. Auch mit Hardware beschäftigte er sich – mithilfe eines Raspberry Pi und ein paar Sensoren baute er ein einfaches Smart-Home-System, das per App die Raumtemperatur steuern konnte. Besonders stolz war er darauf, als er zum ersten Mal ein neuronales Netz trainierte, das handgeschriebene Zahlen erkennen konnte – auch wenn die Genauigkeit zunächst zu wünschen übrig ließ. Doch anstatt frustriert zu sein, reizten ihn die Fehler nur noch mehr.",
+        "timestamp": "2023-01-15",
+        "source": "Blog-Eintrag",
+        "summary": "Leon lernt Programmieren mit Python und baut erste Projekte wie ein Smart-Home-System und ein neuronales Netz."
+    },
+    {
+        "header": "Teil 3: Der Blick in die Zukunft",
+        "content": "Leon ist sich heute sicher, dass er später Informatik studieren möchte. Besonders interessieren ihn Künstliche Intelligenz, maschinelles Lernen und wie man große Datenmengen sinnvoll analysieren kann. In der Schule hilft er mittlerweile dem Informatiklehrer dabei, Übungen für jüngere Klassen zu erstellen, und träumt davon, eines Tages eine eigene Software zu entwickeln, die im Alltag von Menschen echte Probleme löst. Momentan arbeitet er an einem Tool, das Schülern bei der Organisation von Hausaufgaben und Prüfungsterminen helfen soll – komplett lokal, datenschutzfreundlich und Open Source. Für Leon ist Informatik nicht einfach nur ein Fach. Es ist eine Art zu denken, Probleme zu lösen und kreativ zu sein.",
+        "timestamp": "2024-04-22",
+        "source": "Schulprojekt",
+        "summary": "Leon plant ein Informatikstudium und entwickelt Software zur Schülerorganisation – mit Fokus auf Datenschutz und Nützlichkeit."
+    },
+    {
+        "header": "Teil 4: Soziale Aspekte und Engagement",
+        "content": "Neben seinen technischen Interessen setzt sich Leon auch für digitale Bildung ein. Er organisiert an seiner Schule Workshops für jüngere Schüler*innen, in denen er Grundlagen der Programmierung vermittelt. Darüber hinaus engagiert er sich in einem lokalen Verein, der Kindern aus bildungsfernen Haushalten den Zugang zu Computern ermöglicht. Sein Ziel ist es, Barrieren abzubauen und anderen den Weg in die digitale Welt zu erleichtern.",
+        "timestamp": "2024-06-03",
+        "source": "Interview mit Schulzeitung",
+        "summary": "Leon engagiert sich sozial, indem er Programmierworkshops gibt und sich für Chancengleichheit einsetzt."
+    },
+    {
+        "header": "Teil 5: Rückblick und Selbstreflexion",
+        "content": "Rückblickend sagt Leon, dass nicht jedes Projekt erfolgreich war – viele endeten in Sackgassen oder wurden nie fertig. Doch gerade das habe ihn gelehrt, dass Scheitern Teil des Lernprozesses ist. Er führt mittlerweile ein digitales Tagebuch, in dem er seine Fortschritte und Erkenntnisse festhält. Seine größte Stärke sieht er heute darin, niemals aufzuhören, Fragen zu stellen.",
+        "timestamp": "2025-02-11",
+        "source": "Digitales Tagebuch",
+        "summary": "Leon reflektiert über Misserfolge und sieht darin wichtige Lektionen für seine Entwicklung als Entwickler."
+    }
+]

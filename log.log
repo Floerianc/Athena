@@ -1,0 +1,30 @@
+2025-07-14 23:33:48,350 INFO Loading JSON to RAM...
+2025-07-14 23:33:48,351 INFO __init__: Loading client, embedding-function and chroma collection
+2025-07-14 23:33:48,795 INFO Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-07-14 23:33:49,638 INFO _insert_json: Upserting JSON-data into collection
+2025-07-14 23:33:50,591 INFO HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-14 23:33:51,530 INFO search_collection: Searching in collection
+2025-07-14 23:33:51,741 INFO HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-14 23:34:00,727 INFO HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-14 23:34:25,300 INFO Loading JSON to RAM...
+2025-07-14 23:34:25,300 INFO __init__: Loading client, embedding-function and chroma collection
+2025-07-14 23:34:25,740 INFO Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-07-14 23:34:26,530 INFO _insert_json: Upserting JSON-data into collection
+2025-07-14 23:37:09,470 INFO Loading JSON to RAM...
+2025-07-14 23:37:09,470 INFO __init__: Loading client, embedding-function and chroma collection
+2025-07-14 23:37:09,893 INFO Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-07-14 23:37:10,671 INFO _insert_json: Upserting JSON-data into collection
+2025-07-14 23:37:11,431 INFO HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-14 23:37:11,620 INFO search_collection: Searching in collection
+2025-07-14 23:37:12,031 INFO HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-14 23:37:18,295 INFO HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
+2025-07-14 23:43:09,384 INFO Loading JSON to RAM...
+2025-07-14 23:43:09,384 INFO __init__: Loading client, embedding-function and chroma collection
+2025-07-14 23:43:10,031 INFO Anonymized telemetry enabled. See                     https://docs.trychroma.com/telemetry for more information.
+2025-07-14 23:43:10,815 INFO _insert_json: Upserting JSON-data into collection
+2025-07-14 23:43:12,618 INFO HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-14 23:43:12,885 INFO search_collection: Searching in collection
+2025-07-14 23:43:13,129 INFO HTTP Request: POST https://api.openai.com/v1/embeddings "HTTP/1.1 200 OK"
+2025-07-14 23:43:13,156 INFO new_response: Waiting for OpenAI response...
+2025-07-14 23:43:14,196 INFO prompt: Generating prompt...
+2025-07-14 23:43:26,164 INFO HTTP Request: POST https://api.openai.com/v1/responses "HTTP/1.1 200 OK"
