@@ -11,7 +11,7 @@
 #       - Add support for max_tokens (doesn't work???)              (HIGH PRIORITY)
 # TODO: Cool CLI and API for allat                                  (COMING SOON)
 # TODO: Delete old collection before loading new one                (X)
-# TODO: Major code clean-up                                         (HIGH PRIORITY)
+# TODO: Major code clean-up                                         (VERY HIGH PRIORITY)
 # TODO: Fix venv
 
 # externals
@@ -33,9 +33,10 @@ if __name__ == "__main__":
     )
     cleaned = search.clean_results(results)
     
-    data = gpt.InputData(
+    data = gpt.QueryData(
         query = query,
         data = results
     )
-    query = gpt.GPTQuery(data, gpt.OutputTypes.PLAIN, "./dumps/schema.json")
+    query = gpt.GPTQuery(data, gpt.OutputTypes.JSON, "./dumps/schema.json")
     print(query.response)
+    query.save_debug()

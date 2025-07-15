@@ -27,3 +27,4 @@ class OutputHeaders:
 class OutputTypes(Enum):
     PLAIN   = "plaintext"
     JSON    = "json"
+    MD      = "markdown"
