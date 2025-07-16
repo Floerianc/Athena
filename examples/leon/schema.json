@@ -1,0 +1,38 @@
+{
+    "format": {
+        "type": "json_schema",
+        "name": "humans",
+        "strict": false,
+        "schema": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "description": "A message to explain the following contents and how they were found"
+                },
+                "sources": {
+                    "type": "array",
+                    "description": "Shows the source of where the info was found. Should point to either some point in the JSON data or a website if asked to do so.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "opinion": {
+                    "type": "string",
+                    "description": "Your own opinion on the protagonist of the story."
+                },
+                "rating": {
+                    "type": "number",
+                    "description": "Rating out of 100 on the protagonist of the story."
+                }
+            },
+            "required": [
+                "message",
+                "sources",
+                "opinion",
+                "rating"
+            ],
+            "additionalProperties": false
+        }
+    }
+}

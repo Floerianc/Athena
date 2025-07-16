@@ -9,11 +9,12 @@ from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from datetime import datetime
 from dotenv import load_dotenv
 from typing import Callable
+from memory import GPTMemory
 
 load_dotenv()
 
 logging.basicConfig(
-    filename="./log.log",
+    filename="./logs/log.log",
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s"
 )
@@ -40,6 +41,7 @@ class DBManager:
             model_name="text-embedding-3-small"
         )
         self.collection = self.create_collection()
+        self.chat_history = GPTMemory()
     
     def get_client(self) -> ClientAPI:
         return self.client
@@ -69,42 +71,40 @@ class DBManager:
     
     def _load_data(self, filename: str) -> dict:
         if filename:
-            with open(f"{os.path.realpath(filename)}") as file:
+            with open(filename) as file:
                 log.info("Loading JSON to RAM...")
                 return json.load(file)
         return {}
-
-def _verify_chromadb_path(path: str) -> bool:
-    content = os.listdir(path)
-    files = [
-        file for file in content if 
-        os.path.isfile(os.path.realpath(f"{path}{file}"))
-    ]
-    folders = [
-        folder for folder in content if 
-        os.path.isdir(os.path.realpath(f"{path}{folder}"))]
     
-    if len(files) == 1:
-        pass
-    else:
-        return False
+    def _verify_chromadb_path(self, path: str) -> bool:
+        content = os.listdir(path)
+        files = [
+            file for file in content if os.path.isfile(os.path.realpath(f"{path}{file}"))
+        ]
+        folders = [
+            folder for folder in content if os.path.isdir(os.path.realpath(f"{path}{folder}"))]
+        
+        if len(files) == 1:
+            pass
+        else:
+            return False
+        
+        for folder in folders:
+            for file in os.listdir(os.path.join(path, folder)):
+                if file.endswith('.bin'):
+                    continue
+                else:
+                    return False
+        return True
     
-    for folder in folders:
-        for file in os.listdir(os.path.join(path, folder)):
-            if file.endswith('.bin'):
-                continue
-            else:
-                return False
-    return True
-
-@log_event("Deleting chroma database")
-def annihilate_db() -> None:
-    path = './chromadb/'
-    if _verify_chromadb_path(path):
-        try:
-            shutil.rmtree(path)
-        except:
-            os.remove(os.path.realpath(f"{path}chroma.sqlite3"))
+    @log_event("Deleting chroma database")
+    def annihilate_db(self) -> None:
+        path = './chromadb/'
+        if self._verify_chromadb_path(path):
+            try:
+                shutil.rmtree(path)
+            except:
+                return
 
 def get_logger():
     return log

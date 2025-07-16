@@ -33,5 +33,19 @@
         "timestamp": "2025-02-11",
         "source": "Digitales Tagebuch",
         "summary": "Leon reflektiert über Misserfolge und sieht darin wichtige Lektionen für seine Entwicklung als Entwickler."
+    },
+    {
+        "header": "Teil 6: Der erste echte Auftrag",
+        "content": "Mit 16 wird Leon zum ersten Mal von einer kleinen lokalen Buchhandlung angesprochen, die von seinen Projekten gehört hat. Sie benötigen eine einfache, aber funktionale Webseite mit einem kleinen Verwaltungstool für den Bestand. Leon nimmt die Herausforderung an und programmiert innerhalb weniger Wochen eine minimalistische Web-App mit Python (Flask), HTML/CSS und SQLite. Das Projekt bringt ihn zum ersten Mal mit echten Kundenerwartungen und Projektmanagement in Kontakt. Besonders spannend für ihn war es, Wünsche aufzunehmen, sinnvoll zu priorisieren und eine Lösung zu liefern, die tatsächlich genutzt wird. Die positive Rückmeldung der Buchhandlung motiviert ihn, sich künftig auch auf echte Softwarelösungen für kleinere Unternehmen zu spezialisieren.",
+        "timestamp": "2025-04-27",
+        "source": "E-Mail-Verlauf mit dem Buchladen",
+        "summary": "Leon programmiert erstmals für einen externen Kunden – eine Buchladen-Web-App mit einfacher Warenverwaltung."
+    },
+    {
+        "header": "Teil 7: Einstieg in die Forschung",
+        "content": "Im Sommer 2025 bewirbt sich Leon für ein Schülerforschungsprogramm der Universität Hamburg im Bereich 'Künstliche Intelligenz in der Bildung'. Gemeinsam mit einem kleinen Team aus anderen motivierten Schüler*innen entwickelt er einen Prototypen eines KI-gestützten Lernassistenten, der Schülern individuelle Übungsaufgaben stellt – basierend auf ihren bisherigen Leistungen. Dabei lernt Leon nicht nur viel über Machine Learning Frameworks wie PyTorch, sondern auch über die Bedeutung sauberer Datensätze, ethischer Verantwortung und algorithmischer Fairness. Die Zusammenarbeit mit Wissenschaftler*innen bestärkt ihn endgültig in seinem Wunsch, die Informatik mit gesellschaftlichem Nutzen zu verbinden.",
+        "timestamp": "2025-07-04",
+        "source": "Teilnahmezertifikat und Projektdokumentation",
+        "summary": "Leon nimmt an einem Forschungsprojekt teil und entwickelt einen KI-basierten Lernassistenten im Bildungsbereich."
     }
 ]

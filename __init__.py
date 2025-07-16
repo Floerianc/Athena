@@ -7,36 +7,51 @@
 # TODO: Pipeline to AI to process query search and results          (X)
 #       - Is able to convert QueryResults and user query into       (X)
 #         a pure string prompt                                      (X) 
-#       - Add full support for structured outputs                   (MID PRIORITY)
-#       - Add support for max_tokens (doesn't work???)              (HIGH PRIORITY)
+#       - Add full support for structured outputs                   (X)
+#       - Add support for max_tokens                                (X)
 # TODO: Cool CLI and API for allat                                  (COMING SOON)
 # TODO: Delete old collection before loading new one                (X)
-# TODO: Major code clean-up                                         (VERY HIGH PRIORITY)
-# TODO: Fix venv
+# TODO: Major code clean-up                                         (MID PRIORITY)
+# TODO: More Configs                                                (MID PRIORITY)
+# TODO: Fix venv                                                    (X)
+# TODO: Add memory / history to chat                                (HIGH PRIORITY)
+# TODO: Support plain-text, markdown and PDF inputs                 (VERY HIGH PRIORITY)
+# TODO: Tools for summarization (z.B. chapters)                     (HIGH PRIORITY)
+# TODO: Sort search results by relevance from another AI            (HIGH PRIORITY)
+# TODO: Prompt shortener                                            (HIGH PRIORITY)
+# TODO: Webapp                                                      (NOT IMPORTANT YET)
+# TODO: Unit-Tests                                                  (MID PRIORITY)
 
 # externals
+import os
 import sys
 
+os.chdir(
+    os.path.dirname(
+        os.path.realpath(sys.argv[0])
+    )
+)
+
 # locals
+import config
+import db
 import processor
 import search
 import gpt
 
 if __name__ == "__main__":
-    proc = processor.Processor("./dumps/test.json")
-    collection = proc.get_collection()
+    db = db.DBManager()
+    config = config.Config(config.OutputTypes.JSON)
+    processor = processor.Processor(db, "dumps/test.json", insert_json=True)
+    search_engine = search.SearchEngine(db)
     
-    search = search.SearchEngine(collection)
-    query = 'Fasse die gesamte Geschichte kurz und knapp zusammen. Lasse aber nicht zu viele Informationen heraus.'
-    results = search.search_collection(
-        query,
+    query = "Was müsste Leon tun, um ein eigenständiges, erfolgreiches Silicon Valley Unternehmen zu gründen? Beziehe dich auf explizite Stellen aus der Geschichte und nenne detaillierte Vorschläge."
+    raw_results = search_engine.search_collection(
+        query
     )
-    cleaned = search.clean_results(results)
     
-    data = gpt.QueryData(
-        query = query,
-        data = results
-    )
-    query = gpt.GPTQuery(data, gpt.OutputTypes.JSON, "./dumps/schema.json")
-    print(query.response)
-    query.save_debug()
+    query_data = gpt.QueryData(query, raw_results)
+    gpt_response = gpt.GPTQuery(query_data, config, "dumps/schema.json", instant_request=True)
+    print(gpt_response.response)
+    
+    gpt_response.save_debug()

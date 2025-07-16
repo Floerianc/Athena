@@ -5,7 +5,11 @@ from chromadb import QueryResult
 from openai import OpenAI
 from dotenv import load_dotenv
 from datetime import datetime
-from consts import *
+from typing import (
+    Union, 
+    Optional
+)
+from config import *
 
 load_dotenv()
 
@@ -19,14 +23,23 @@ class QueryData:
         self.query = query
 
 class GPTQuery:
-    def __init__(self, data: QueryData, outputType: 'OutputTypes', schema_path: str, instant_request: bool = True, max_tokens: int = 1024) -> None:
+    def __init__(
+        self,
+        data: QueryData,
+        config: Config,
+        schema_path: Optional[str] = None, 
+        instant_request: bool = True, 
+        max_tokens: int = 1024
+    ) -> None:
         self.data = data
-        self.outputType = outputType
+        self.config = config
         
         self.max_tokens = max_tokens
-        self.schema = self.get_schema(schema_path)
-        self.promptHeader = OutputHeaders(outputType)
         
+        if schema_path:
+            self.schema = self.get_schema(schema_path)
+        else:
+            self.schema = {}
         if instant_request:
             self.response = self.new_response()
     
@@ -34,7 +47,7 @@ class GPTQuery:
     def _prompt_content(self) -> str:
         json_schema = ""
         
-        if self.outputType == OutputTypes.JSON:
+        if self.config.output_type == OutputTypes.JSON:
             json_schema = self._stringize_prompt_schema()
         
         query = self.data.query
@@ -53,7 +66,7 @@ class GPTQuery:
     @property
     @db.log_event("Generating prompt...")
     def prompt(self) -> str:
-        llm_head = self.promptHeader.header
+        llm_head = self.config.output_header.header
         llm_content = self._prompt_content
         
         return "".join([llm_head, llm_content])
@@ -74,7 +87,7 @@ class GPTQuery:
     
     @db.log_event("Converting JSON-Schema structured output into string...")
     def _validate_json_schema(self) -> dict:
-        if not self.outputType == OutputTypes.JSON:
+        if not self.config.output_type == OutputTypes.JSON:
             return {}
         else:
             return self.schema
@@ -90,82 +103,59 @@ class GPTQuery:
             raise ValueError(f"Couldn't find file at '{path}'.")
     
     @db.log_event("Waiting for OpenAI response...")
-    def new_response(self) -> str:
-        # TODO: More elegant solution!!
+    def new_response(self) -> Union[dict, str]:
+        base_params = {
+            'model': "gpt-4.1-mini",
+            'input': [
+                {
+                    "role": "system",
+                    "content": [
+                        {
+                            "type": "input_text",
+                            "text": self.prompt,
+                        }
+                    ]
+                }
+            ],
+            "reasoning": {},
+            "tools": [],
+            "temperature": 1.0,
+            "max_output_tokens": self.max_tokens,
+            "top_p": 1,
+            "store": True
+        }
         
-        if self.outputType == OutputTypes.PLAIN:
-            rsp = client.responses.create(
-                model="gpt-4.1-mini",
-                input=[
-                    {
-                        "role": "system",
-                        "content": [
-                            {
-                                "type": "input_text",
-                                "text": self.prompt
-                            }
-                        ]
-                    }
-                ],
-                reasoning={},
-                tools=[],
-                temperature=1.0,
-                max_output_tokens=self.max_tokens,
-                top_p=1,
-                store=True
-            )
-            return rsp.output_text
+        if self.config.output_type == OutputTypes.JSON:
+            base_params["text"] = self._validate_json_schema()
         
-        elif self.outputType == OutputTypes.JSON:
-            rsp = client.responses.create(
-                model="gpt-4.1-mini",
-                input=[
-                    {
-                        "role": "system",
-                        "content": [
-                            {
-                                "type": "input_text",
-                                "text": self.prompt
-                            }
-                        ]
-                    }
-                ],
-                text=self._validate_json_schema(),
-                reasoning={},
-                tools=[],
-                temperature=1.0,
-                max_output_tokens=self.max_tokens,
-                top_p=1,
-                store=True
-            )
-            return json.loads(rsp.output_text)
-        else:
-            return ""
+        rsp = client.responses.create(
+            **base_params
+        )
+        
+        if self.config.output_type == OutputTypes.JSON:
+            try:
+                return json.loads(rsp.output_text)
+            except json.JSONDecodeError:
+                db.log.error(
+                    f"JSON decoding failed. Mayhaps not sufficient tokens\n"
+                    f"(max_output_tokens={self.max_tokens}). Returning plain-text instead!"
+                )
+        return rsp.output_text
     
     def save_debug(self) -> None:
-        query_input = [
-            f"Query: {self.data.query}",
-            f"Search results: {json.dumps(self.data.result)}"
-        ]
+        debug_info = {
+            'query': self.data.query,
+            'search_results': json.dumps(self.data.result),
+            'output_type': f"{self.config.output_type.name} --> {self.config.output_type.value}",
+            'prompt_header': self.config.output_header.header,
+            'prompt_content': self._prompt_content,
+            'json_schema': json.dumps(self.schema),
+            'response': self.response
+        }
+        date_string = datetime.now().strftime("%d-%m-%Y_%H%M%S")
         
-        output_header = [
-            f"Output-Type: {self.outputType.name} ({self.outputType.value})"
-            f"Prompt header: {self.promptHeader}"
-        ]
-        
-        prompt = [
-            f"Prompt content: {self._prompt_content}"
-        ]
-        
-        rsp = [
-            f"Schema: {json.dumps(self.schema)}"
-            f"Response: {self.response}"
-        ]
-        
-        with open(f"debug.dat", "a") as debug: # FIXME: Bad code + datetime based string!!!
-            for l in [query_input, output_header, prompt, rsp]:
-                string = "\n".join(l)
-                debug.write(string)
+        with open(f"{date_string}.dat", "a") as debug:
+            for name, value in debug_info.items():
+                debug.write(f"{name}: {value}\n")
 
-if __name__ == "__main__":
-    pass
+

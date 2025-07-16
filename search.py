@@ -1,11 +1,7 @@
 import json
 import db
-import processor
 from colorama import Fore
-from chromadb import (
-    Collection,
-    QueryResult,
-)
+from chromadb import QueryResult
 from chromadb.api.types import Document
 from typing import (
     Union,
@@ -15,8 +11,9 @@ from typing import (
 )
 
 class SearchEngine:
-    def __init__(self, collection: Collection) -> None:
-        self.collection = collection
+    def __init__(self, db_manager: db.DBManager) -> None:
+        self.db_manager = db_manager
+        self.collection = self.db_manager.get_collection()
     
     def jsonify_results(self, result: QueryResult, key: str) -> Union[dict, list[dict]]:
         data = result.get(key, None)
@@ -113,6 +110,3 @@ class SearchEngine:
             n_results=64
         )
         return self.limit_by_tokens(results, max_tokens)
-
-if __name__ == "__main__":
-    pass
