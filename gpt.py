@@ -1,7 +1,6 @@
 import os
 import json
 import db
-from chromadb import QueryResult
 from openai import OpenAI
 from dotenv import load_dotenv
 from datetime import datetime
@@ -9,32 +8,24 @@ from typing import (
     Union, 
     Optional
 )
+from openai.types.responses.response import Response
+from api_types import QueryData
 from config import *
 
 load_dotenv()
 
-client = OpenAI(
-    api_key = os.getenv("CHROMA_OPENAI_API_KEY")
-)
-
-class QueryData:
-    def __init__(self, query: str, data: QueryResult) -> None:
-        self.result = data
-        self.query = query
-
 class GPTQuery:
     def __init__(
         self,
+        db: db.DBManager,
         data: QueryData,
         config: Config,
         schema_path: Optional[str] = None, 
-        instant_request: bool = True, 
-        max_tokens: int = 1024
+        instant_request: bool = True
     ) -> None:
+        self.db = db
         self.data = data
         self.config = config
-        
-        self.max_tokens = max_tokens
         
         if schema_path:
             self.schema = self.get_schema(schema_path)
@@ -55,6 +46,7 @@ class GPTQuery:
         context = "\n\n".join(documents[0])
         
         return f"""
+        JSON-Schema:
         {json_schema}
         
         User-Query: {query}
@@ -103,34 +95,26 @@ class GPTQuery:
             raise ValueError(f"Couldn't find file at '{path}'.")
     
     @db.log_event("Waiting for OpenAI response...")
-    def new_response(self) -> Union[dict, str]:
-        base_params = {
-            'model': "gpt-4.1-mini",
-            'input': [
-                {
-                    "role": "system",
-                    "content": [
-                        {
-                            "type": "input_text",
-                            "text": self.prompt,
-                        }
-                    ]
-                }
-            ],
-            "reasoning": {},
-            "tools": [],
-            "temperature": 1.0,
-            "max_output_tokens": self.max_tokens,
-            "top_p": 1,
-            "store": True
-        }
+    def new_response(self, add_to_memory: bool = True) -> Union[dict, str]:
+        base_params = self.config.base_params
+        base_params["input"] = self.db.chat_history.response_input(self.config.output_header.header)
+        base_params["input"].append(
+            {
+                "role": "user",
+                "content": self._prompt_content
+            }
+        )
         
         if self.config.output_type == OutputTypes.JSON:
             base_params["text"] = self._validate_json_schema()
         
-        rsp = client.responses.create(
+        rsp = self.db.openai_client.responses.create(
             **base_params
         )
+        
+        if add_to_memory:
+            self.data.rsp = rsp.output_text
+            self.db.chat_history.add_context(self.data)
         
         if self.config.output_type == OutputTypes.JSON:
             try:
@@ -138,14 +122,16 @@ class GPTQuery:
             except json.JSONDecodeError:
                 db.log.error(
                     f"JSON decoding failed. Mayhaps not sufficient tokens\n"
-                    f"(max_output_tokens={self.max_tokens}). Returning plain-text instead!"
+                    f"(max_output_tokens={self.config.response.max_output_tokens}). Returning plain-text instead!"
                 )
-        return rsp.output_text
+                return rsp.output_text
+        else:
+            return rsp.output_text
     
     def save_debug(self) -> None:
         debug_info = {
             'query': self.data.query,
-            'search_results': json.dumps(self.data.result),
+            'search_results': json.dumps(self.data.result["documents"]),
             'output_type': f"{self.config.output_type.name} --> {self.config.output_type.value}",
             'prompt_header': self.config.output_header.header,
             'prompt_content': self._prompt_content,

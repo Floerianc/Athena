@@ -6,7 +6,7 @@
 #       - Cap at max tokens                                         (X)
 # TODO: Pipeline to AI to process query search and results          (X)
 #       - Is able to convert QueryResults and user query into       (X)
-#         a pure string prompt                                      (X) 
+#         a pure string prompt                                      (X)
 #       - Add full support for structured outputs                   (X)
 #       - Add support for max_tokens                                (X)
 # TODO: Cool CLI and API for allat                                  (COMING SOON)
@@ -40,8 +40,8 @@ import search
 import gpt
 
 if __name__ == "__main__":
-    db = db.DBManager()
     config = config.Config(config.OutputTypes.JSON)
+    db = db.DBManager(config)
     processor = processor.Processor(db, "dumps/test.json", insert_json=True)
     search_engine = search.SearchEngine(db)
     
@@ -51,7 +51,21 @@ if __name__ == "__main__":
     )
     
     query_data = gpt.QueryData(query, raw_results)
-    gpt_response = gpt.GPTQuery(query_data, config, "dumps/schema.json", instant_request=True)
+    gpt_response = gpt.GPTQuery(db, query_data, config, "dumps/schema.json", instant_request=True)
     print(gpt_response.response)
     
     gpt_response.save_debug()
+
+
+# Token calculation:
+
+# Input:
+#   length of query                             (???    Tokens              )   [Testing: 40 Tokens]
+#   max_tokens from search result in chromadb   (2048   Tokens by default   )   [Testing: 2048 Tokens]
+#   Chat history / Memory                       (n * max_tokens             )   [Testing: n * 200 Tokens, max: 2000 Tokens]
+#   JSON-Schema                                 (???    Tokens              )   [Testing: 238 Tokens]
+#   Total:
+#       40 + 2048 + 238 = 2326 Tokens           (According to OpenAI: 2.41k) <-- The rest is probably from the formatting of the Input
+
+# Output:
+#   max_tokens for the output

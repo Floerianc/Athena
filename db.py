@@ -3,12 +3,14 @@ import os
 import json
 import logging
 import shutil
+from openai import OpenAI
 from chromadb.api import ClientAPI
 from chromadb.api.models.Collection import Collection
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from datetime import datetime
 from dotenv import load_dotenv
 from typing import Callable
+from config import Config
 from memory import GPTMemory
 
 load_dotenv()
@@ -32,7 +34,7 @@ def log_event(msg: str):
 
 class DBManager:
     @log_event("Loading client, embedding-function and chroma collection")
-    def __init__(self) -> None:
+    def __init__(self, config: Config) -> None:
         self.client = chromadb.PersistentClient(
             path = './chromadb'
         )
@@ -40,8 +42,11 @@ class DBManager:
             api_key=os.getenv("CHROMA_OPENAI_API_KEY"),
             model_name="text-embedding-3-small"
         )
+        self.openai_client = OpenAI(
+            api_key = os.getenv("CHROMA_OPENAI_API_KEY")
+        )
         self.collection = self.create_collection()
-        self.chat_history = GPTMemory()
+        self.chat_history = GPTMemory(config, self.openai_client)
     
     def get_client(self) -> ClientAPI:
         return self.client
