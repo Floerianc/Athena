@@ -1,8 +1,11 @@
 from enum import Enum
-from dataclasses import dataclass
+from dataclasses import (
+    dataclass,
+    field
+)
 from typing import (
     Union,
-    Optional,
+    List,
     TYPE_CHECKING
 )
 from chromadb.api.types import QueryResult
@@ -78,7 +81,39 @@ class InputTypes(Enum):
 
 
 class QueryData:
-    def __init__(self, query: str, data: Union[dict, QueryResult], rsp: Optional[str] = None) -> None:
+    def __init__(self, query: str, data: Union[dict, QueryResult], rsp: Union[str, dict, None] = None) -> None:
         self.result = data
         self.query = query
         self.rsp = rsp
+
+
+@dataclass
+class Settings:
+    timestamp: float
+    input_file: str
+    user_inputs: List[str]
+    models: List[str]
+
+
+@dataclass
+class SystemInfo:
+    CPU: str
+    RAM: str
+    OS: str
+    PY: str
+
+
+@dataclass
+class DBInfo:
+    input_size: str
+    input_tokens: int
+    documents: int
+
+
+@dataclass
+class BenchmarkResults:
+    timestamps: List[tuple[float, float]] = field(default_factory=list)
+    model_responses: List[QueryData] = field(default_factory=list)
+    minTime: float = field(default_factory=float)
+    avgTime: float = field(default_factory=float)
+    maxTime: float = field(default_factory=float)

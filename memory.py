@@ -22,6 +22,7 @@ from api.types import (
     OutputTypes
 )
 from api.logger import log_event
+import api.utils as utils
 
 if TYPE_CHECKING:
     from config import Config
@@ -104,6 +105,15 @@ class GPTMemory:
         rsp_input.insert(0, {"role": "system", "content": [{"type": "input_text", "text": system_prompt}]})
         return rsp_input
     
+    @log_event("Using fallback function to shorten in- and output...")
+    def _shorten_data_fallback(self, data: List[str]) -> List[str]:
+        shortened = []
+        max_chars = utils.tokens_to_chars(self.config.tokens_per_memory)
+        for item in data:
+            start = 0 if len(item) <= max_chars else len(item) - max_chars
+            shortened.append(item[start:])
+        return shortened
+    
     @log_event("Shortening user input and model output...")
     def shorten_data(self, data: List[str]) -> List[str]:
         if len(data) != 2:
@@ -133,19 +143,20 @@ class GPTMemory:
         output_lines = output.splitlines()
         
         if len(output_lines) != len(data):
-            raise ValueError(f"Output and input don't have same amount of lines.\nOutput lines: {len(output_lines)}, expected: {len(data)}")
-        for line in output_lines:
-            try:
-                json.loads(line)
-            except:
-                pass # treat as plain-text
+            log_event(f"Output and input don't have same amount of lines.\nOutput lines: {len(output_lines)}, expected: {len(data)}")
+            return self._shorten_data_fallback(data)
         return output_lines
     
     @log_event("Converting user input and model output to dictionaries...")
     def create_response_dicts(self, data: QueryData, shorten: bool = True) -> list[dict]:
         if shorten:
             if data.rsp:
-                rsp = self.shorten_data([data.query, data.rsp])
+                if isinstance(data.rsp, dict):
+                    data.rsp = json.dumps(data.rsp)
+                elif not isinstance(data.rsp, str):
+                    data.rsp = str(data.rsp)
+                
+                rsp = self.shorten_data([data.query, str(data.rsp)])
                 data.query = rsp[0]
                 data.rsp = rsp[1]
             else:

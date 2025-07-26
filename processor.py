@@ -1,5 +1,6 @@
 import db
 import os
+from dataclasses import fields
 from chromadb.api.types import (
     Document,
     Documents
@@ -173,12 +174,56 @@ class Processor:
     @log_event("Validating input file...")
     def validate_input(self) -> None:
         match self.config.input_type:
+            case InputTypes.AUTO:
+                ext = os.path.splitext(self.filename)[1].lower()
+                match ext:
+                    case ".json":
+                        self.validate_json()
+                    case ".txt":
+                        self.validate_txt()
+                    case ".md":
+                        self.validate_md()
             case InputTypes.JSON:
                 self.validate_json()
             case InputTypes.PLAIN:
                 self.validate_txt()
             case InputTypes.MD:
                 self.validate_md()
+    
+    def _convert_nested_attr(self, value: Any, visited: set) -> Any:
+        if id(value) in visited:
+            return "<circular reference detected>"
+        visited.add(id(value))
+        
+        if hasattr(value, "__dataclass_fields__"):
+            return self.dataclass_to_dict(value, visited)
+        elif hasattr(value, "__dict__"):
+            return self.class_to_dict(value, visited)
+        elif isinstance(value, list):
+            return [self._convert_nested_attr(v, visited) for v in value]
+        elif isinstance(value, dict):
+            return {k: self._convert_nested_attr(v, visited) for k, v in value.items()}
+        else:
+            return str(value)
+    
+    def dataclass_to_dict(self, instance: Any, visited: set) -> dict:
+        obj = {}
+        
+        for field in fields(instance):
+            attr = field.name
+            value = getattr(instance, attr)
+            obj[attr] = self._convert_nested_attr(value, visited)
+        return obj
+    
+    def class_to_dict(self, instance: Any, visited: set) -> dict:
+        obj = {}
+        
+        for attr, value in instance.__dict__.items():
+            obj[attr] = self._convert_nested_attr(value, visited)
+        return obj
+    
+    def type_to_dict(self, instance: Any) -> Any:
+        return self._convert_nested_attr(instance, visited=set())
 
 if __name__ == "__main__":
     c = Config(InputTypes.PLAIN, OutputTypes.PLAIN)

@@ -52,11 +52,12 @@ class GPTQuery:
         return f"""
         JSON-Schema:
         {json_schema}
-        User-Query: {query}
+        
         Search results from database: 
         {context}
         Most recent memories:
         {self.db.chat_history.stringize_recent_memories}
+        Latest User-Query: {query}
         """
     
     @property

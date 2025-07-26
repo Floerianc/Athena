@@ -13,7 +13,7 @@
 # TODO: Delete old collection before loading new one                (X)
 # TODO: More logging                                                (X)
 # TODO: Major code clean-up                                         (MID PRIORITY)
-# TODO: Colorama color                                              (LOW PRIORITY)
+# TODO: Colorama color                                              (X)
 # TODO: Code comments and docs                                      (VERY HIGH PRIORITY)
 # TODO: README File                                                 (LOW PRIORITY)
 # TODO: More Configs                                                (X)
@@ -44,12 +44,19 @@
 # TODO: Prompt shortener                                            (HIGH PRIORITY)
 # TODO: Webapp                                                      (NOT IMPORTANT YET)
 # TODO: Unit-Tests                                                  (MID PRIORITY)
-# TODO: Benchmarks                                                  (MID PRIORITY)
+# TODO: Benchmarks                                                  (X) (For now)
+#       - Allows for settings (timestamp, input_file, user_inputs, models to test)
+#       - Gathers system info (CPU, RAM, OS, Python version)
+#       - DB Info (input_size, input_tokens, documents)
+#       - Results (timestamps, model_responses, minTime, maxTime, avgTime)
+#       - Shows every step nicely in console (CLI)
+#       - Full JSON export (every class, dataclass and result)
+#       - Dummy Data to test
+#       - BUT: can be heavy on OpenAI tokens!
 
 # externals
 import os
 import sys
-import time
 
 os.chdir(
     os.path.dirname(
@@ -57,55 +64,16 @@ os.chdir(
     )
 )
 
-# locals
-import config
-import db
-import processor
-import search
-import gpt
-
-if __name__ == "__main__":
-    config = config.Config(config.InputTypes.PLAIN, config.OutputTypes.MD)
-    db = db.DBManager(config)
-    processor = processor.Processor(db, config, "dumps/test.txt", insert_json=True)
-    search_engine = search.SearchEngine(config, db)
-    
-    while True:
-        query = input("To AI > ")
-        if query.lower() in ["exit", "quit", "q"]:
-            print("Exiting...")
-            break
-        
-        s = time.time()
-        clean_results = search_engine.search_collection(
-            query
-        )
-        
-        query_data = gpt.QueryData(query, clean_results)
-        gpt_response = gpt.GPTQuery(db, query_data, config, "dumps/schema.json", instant_request=True)
-        print(gpt_response.response)
-        # print(db.chat_history.chroma_collection.get())
-        # print(str(gpt_response.data))
-        gpt_response.save_debug()
-        
-        e = time.time()
-        print(f"Query took {e - s:.2f} seconds.\nModel: {config.response.model}")
-
+# Benchmark results:
+#   1. Attempt:
+#       min time: 3.12 s
+#       avg time: 4.71 s
+#       max time: 6.65 s
+#
+#   2. Attempt:
+#       min time: 2.68 s
+#       avg time: 5.07 s
+#       max time: 8.56 s
 
 # Token calculation:
-
-# Input:
-#   length of query                             (???    Tokens              )   [Testing: 40 Tokens]
-#   max_tokens from search result in chromadb   (2048   Tokens by default   )   [Testing: 2048 Tokens]
-#   Chat history / Memory                       (n * max_tokens             )   [Testing: n * 200 Tokens * 2, max: 2000 Tokens]
-#   JSON-Schema                                 (???    Tokens              )   [Testing: 238 Tokens]
-#   Total:
-#       40 + 2048 + 238 = 2326 Tokens           (According to OpenAI: 2.41k) <-- The rest is probably from the formatting of the Input
-
-# Output:
-#   max_tokens for the output
-
-# Benchmark results:
-#   - gpt-4.1-mini:     13.22 seconds for 1 query
-#   - gpt-4.1-nano:     5.56 seconds for 1 query
-#   - gpt-3.5-turbo:    6.32 seconds for 1 query (???)
+#   Coming soon
