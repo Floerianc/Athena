@@ -1,7 +1,6 @@
 import chromadb
 import os
 import json
-import logging
 import shutil
 from openai import OpenAI
 from chromadb.api import ClientAPI
@@ -9,32 +8,18 @@ from chromadb.api.models.Collection import Collection
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from datetime import datetime
 from dotenv import load_dotenv
-from typing import Callable
-from config import Config
+from typing import TYPE_CHECKING
 from memory import GPTMemory
+from api.logger import log_event
+
+if TYPE_CHECKING:
+    from config import Config
 
 load_dotenv()
 
-logging.basicConfig(
-    filename="./logs/log.log",
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(message)s"
-)
-log = logging.getLogger(__name__)
-
-# idk how decorators work i just copied this from somewhere lol
-def log_event(msg: str):
-    def decorator(func: Callable):
-        def wrapper(*args, **kwargs):
-            log.info(f"{func.__name__}: {msg}")
-            result = func(*args, **kwargs) # type: ignore
-            return result
-        return wrapper
-    return decorator
-
 class DBManager:
     @log_event("Loading client, embedding-function and chroma collection")
-    def __init__(self, config: Config) -> None:
+    def __init__(self, config: 'Config') -> None:
         self.client = chromadb.PersistentClient(
             path = './chromadb'
         )
@@ -46,7 +31,7 @@ class DBManager:
             api_key = os.getenv("CHROMA_OPENAI_API_KEY")
         )
         self.collection = self.create_collection()
-        self.chat_history = GPTMemory(config, self.openai_client)
+        self.chat_history = GPTMemory(self.client, self.openai_client, self.openai_ef, config)
     
     def get_client(self) -> ClientAPI:
         return self.client
@@ -65,51 +50,53 @@ class DBManager:
         )
     
     @log_event("Upserting JSON-data into collection")
-    def _insert_json(self, json_obj: dict) -> None:
+    def _insert_json(self, json_obj: list[dict]) -> None:
         docs = [json.dumps(obj) for obj in json_obj]
         
         self.collection.upsert(
             ids = [f"doc{i+1}" for i in range(len(json_obj))],
             documents = docs,
-            metadatas = json_obj
+            metadatas = json_obj if type(json_obj) is dict else None
         )
     
-    def _load_data(self, filename: str) -> dict:
+    def _load_json(self, filename: str) -> list:
         if filename:
             with open(filename) as file:
-                log.info("Loading JSON to RAM...")
-                return json.load(file)
-        return {}
-    
-    def _verify_chromadb_path(self, path: str) -> bool:
-        content = os.listdir(path)
-        files = [
-            file for file in content if os.path.isfile(os.path.realpath(f"{path}{file}"))
-        ]
-        folders = [
-            folder for folder in content if os.path.isdir(os.path.realpath(f"{path}{folder}"))]
-        
-        if len(files) == 1:
-            pass
-        else:
-            return False
-        
-        for folder in folders:
-            for file in os.listdir(os.path.join(path, folder)):
-                if file.endswith('.bin'):
-                    continue
+                log_event("Loading JSON to RAM...")
+                json_file = json.load(file)
+                if not isinstance(json_file, list):
+                    return [json_file]
                 else:
-                    return False
-        return True
-    
-    @log_event("Deleting chroma database")
-    def annihilate_db(self) -> None:
-        path = './chromadb/'
-        if self._verify_chromadb_path(path):
-            try:
-                shutil.rmtree(path)
-            except:
-                return
+                    return json_file
+        else:
+            return []
 
-def get_logger():
-    return log
+def _verify_chromadb_path(path: str) -> bool:
+    content = os.listdir(path)
+    files = [
+        file for file in content if os.path.isfile(os.path.realpath(f"{path}{file}"))
+    ]
+    folders = [
+        folder for folder in content if os.path.isdir(os.path.realpath(f"{path}{folder}"))]
+    
+    if len(files) == 1:
+        pass
+    else:
+        return False
+    
+    for folder in folders:
+        for file in os.listdir(os.path.join(path, folder)):
+            if file.endswith('.bin'):
+                continue
+            else:
+                return False
+    return True
+
+@log_event("Deleting chroma database")
+def annihilate_db() -> None:
+    path = './chromadb/'
+    if _verify_chromadb_path(path):
+        try:
+            shutil.rmtree(path)
+        except:
+            return

@@ -13,9 +13,16 @@ if TYPE_CHECKING:
 class Models(Enum):
     BEST        = "gpt-4.1"         # Best allrounder. However, also most expensive     ($2   / 1M  tokens)
     BALANCED    = "gpt-4.1-mini"    # Good allrounder, quite cheap                      ($1.1 / 1M  tokens)
-    LATENCY     = "gpt-4.1-nano"    # Overall okay, very low latency and price          ($0.1 / 1M  tokens)
+    FASTER      = "gpt-4.1-nano"    # Overall okay, very low latency and price          ($0.1 / 1M  tokens)
+    FASTEST     = "gpt-3.5-turbo"   # Affordable and Fastest model, but worst quality   ($0.5 / 1M  tokens)
     REASONING   = "o4-mini"         # Affordable good reasoning model                   ($1.1 / 1M  tokens)
 
+
+class TextParsings(Enum):
+    AUTO        = "auto"            # Automatically detect the best parsing method
+    BY_BLANK    = "by_blank"        # Split by blank spaces
+    BY_NEWLINE  = "by_newline"      # Split by newlines
+    BY_CHUNK    = "by_chunk"        # Split by chunks
 
 @dataclass
 class ResponseConfig:
@@ -43,8 +50,7 @@ class OutputHeaders:
     
     MARKDOWN_HEADER = """
     You are a strict markdown generator for a general purpose AI with deep understanding of given data and questions.
-    Output a single valid markdown object and try to connect the given data with the given user query to answer their
-    questions, statements and more. Remain formal and factually correct whenever useful.
+    Respond with a markdown text where you answer the latest User-Querys questions in detail and respond to the latest User-Querys statements accordingly.
     """
     
     def __init__(self, output: 'OutputTypes') -> None:
@@ -64,8 +70,15 @@ class OutputTypes(Enum):
     MD      = "markdown"
 
 
+class InputTypes(Enum):
+    AUTO    = "auto"
+    PLAIN   = "txt"
+    JSON    = "json"
+    MD      = "md"
+
+
 class QueryData:
-    def __init__(self, query: str, data: QueryResult, rsp: Optional[str] = None) -> None:
+    def __init__(self, query: str, data: Union[dict, QueryResult], rsp: Optional[str] = None) -> None:
         self.result = data
         self.query = query
         self.rsp = rsp

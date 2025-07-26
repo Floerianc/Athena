@@ -1,0 +1,53 @@
+query: Wie geht es Leon in den einzelnen Kapiteln und was macht er?  
+search_results: [["\"Leon entdeckt fr\\u00fch sein Interesse an Technik, besonders durch Scratch und erste logische Denkprozesse\"", "\"Leon plant ein Informatikstudium und entwickelt eine lokale Organisationssoftware mit NLP-Funktionen\"", "\"Zusammenfassung: Leon programmiert einen Prototyp f\\u00fcr personalisiertes Lernen mit k-Means & Decision Trees\"", "\"Zusammenfassung: Leon entwickelt erste Software- und Hardwareprojekte\"", "\"Leon programmiert f\\u00fcr einen Buchladen eine vollst\\u00e4ndige Web-App mit REST-API und Token-Auth\""]]
+output_type: MD --> markdown
+prompt_header: 
+    You are a strict markdown generator for a general purpose AI with deep understanding of given data and questions.
+    Respond with a markdown text where you answer the latest User-Querys questions in detail and respond to the latest User-Querys statements accordingly.
+    
+prompt_content: 
+        JSON-Schema:
+        
+        User-Query: Wie geht es Leon in den einzelnen Kapiteln und was macht er?  
+        Search results from database: 
+        "Leon entdeckt fr\u00fch sein Interesse an Technik, besonders durch Scratch und erste logische Denkprozesse"
+"Leon plant ein Informatikstudium und entwickelt eine lokale Organisationssoftware mit NLP-Funktionen"
+"Zusammenfassung: Leon programmiert einen Prototyp f\u00fcr personalisiertes Lernen mit k-Means & Decision Trees"
+"Zusammenfassung: Leon entwickelt erste Software- und Hardwareprojekte"
+"Leon programmiert f\u00fcr einen Buchladen eine vollst\u00e4ndige Web-App mit REST-API und Token-Auth"
+        Most recent memories:
+        {'role': 'user', 'content': 'Wie geht es Leon in den einzelnen Kapiteln und was macht er?  '}
+{'role': 'assistant', 'content': 'Leon entwickelt sich von ersten Programmierübungen über komplexe Projekte bis zu realen Software-Lösungen mit wachsendem technischem Können.'}
+        
+json_schema: {"format": {"type": "json_schema", "name": "humans", "strict": false, "schema": {"type": "object", "properties": {"message": {"type": "string", "description": "A message to explain the following contents and how they were found"}, "sources": {"type": "array", "description": "Shows the source of where the info was found. Should point to either some point in the JSON data or a website if asked to do so.", "items": {"type": "string"}}, "opinion": {"type": "string", "description": "Your own opinion on the protagonist of the story."}, "rating": {"type": "number", "description": "Rating out of 100 on the protagonist of the story."}}, "required": ["message", "sources", "opinion", "rating"], "additionalProperties": false}}}
+response: Hier ist der Überblick, wie es Leon in den einzelnen Kapiteln seiner Geschichte geht und was er jeweils macht:
+
+**Kapitel 1: Frühe Technikbegeisterung**  
+- Leon entdeckt früh sein Interesse an Technik, insbesondere durch die Arbeit mit Scratch.  
+- Er beschäftigt sich mit ersten logischen Denkprozessen und Grundlagen des Programmierens.
+
+**Kapitel 2: Studienplanung und erste Softwareentwicklung**  
+- Leon plant, Informatik zu studieren.  
+- Er entwickelt eine lokale Organisationssoftware, die NLP-Funktionen (natürliche Sprachverarbeitung) nutzt.
+
+**Kapitel 3: Entwicklung eines Prototyps für personalisiertes Lernen**  
+- Leon programmiert einen Prototyp, der Methoden wie k-means Clustering und Decision Trees verwendet.  
+- Ziel ist, personalisierte Lerninhalte anzubieten und individuell auf den Nutzer einzugehen.
+
+**Kapitel 4: Erste komplexe Software- und Hardwareprojekte**  
+- Leon realisiert weitere Projekte, die Software und Hardware kombinieren.  
+- Er sammelt praktische Erfahrungen in verschiedenen Technologiebereichen.
+
+**Kapitel 5: Entwicklung einer Webapplikation für einen Buchladen**  
+- Leon baut eine vollständige Web-App mit REST-API inklusive Token-basierter Authentifizierung.  
+- Das Projekt ist umfangreicher und richtet sich an praktische Einsatzbereiche im Handel.
+
+---
+
+Im **Verlauf der gesamten Geschichte** entwickelt sich Leon kontinuierlich weiter:  
+- Von den ersten Schritten im spielerischen Programmieren über das eigenständige Planen und Entwickeln komplexer Anwendungen bis hin zu realen, nutzerorientierten Softwarelösungen.  
+- Er erweitert sein technisches Können stetig und sammelt Erfahrung in unterschiedlichen Bereichen der Informatik.
+
+---
+
+Falls gewünscht, kann ich auch konkret den **sechsten Teil der Geschichte** ergänzen, sobald entsprechende Informationen verfügbar sind. Aktuell liegen nur Details zu fünf Kapiteln vor.

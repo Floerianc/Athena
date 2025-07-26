@@ -1,0 +1,33 @@
+query: Kannst du den Netzwerken Punkt genauer erklären?  
+search_results: [[]]
+output_type: MD --> markdown
+prompt_header: 
+    You are a strict markdown generator for a general purpose AI with deep understanding of given data and questions.
+    Respond with a markdown text where you answer the latest User-Querys questions in detail and respond to the latest User-Querys statements accordingly.
+    
+prompt_content: 
+        JSON-Schema:
+        
+        User-Query: Kannst du den Netzwerken Punkt genauer erklären?  
+        Search results from database: 
+        
+        Most recent memories:
+        {'role': 'user', 'content': 'Wie geht es Leon in den einzelnen Kapiteln und was macht er?  '}
+{'role': 'assistant', 'content': 'Leon entwickelt sich von ersten Programmierübungen über komplexe Projekte bis zu realen Software-Lösungen mit wachsendem technischem Können.'}{'role': 'user', 'content': 'Erklärung zu Punkt 4: Leon spezialisiert sich in KI und Softwareentwicklung, baut Netzwerke auf, sammelt praktische Erfahrung und stärkt Soft Skills.  '}
+{'role': 'assistant', 'content': 'Er vertieft Fachwissen, knüpft Kontakte und verbessert Kommunikation, um in seinem Bereich erfolgreich zu sein.'}{'role': 'user', 'content': 'Kannst du den Netzwerken Punkt genauer erklären?  '}
+{'role': 'assistant', 'content': 'Leon baut sein Netzwerk durch Events, Community-Engagement, praktische Zusammenarbeit und Mentoring auf, was ihm Wissen, Soft Skills und Jobchancen bringt.'}
+        
+json_schema: {"format": {"type": "json_schema", "name": "humans", "strict": false, "schema": {"type": "object", "properties": {"message": {"type": "string", "description": "A message to explain the following contents and how they were found"}, "sources": {"type": "array", "description": "Shows the source of where the info was found. Should point to either some point in the JSON data or a website if asked to do so.", "items": {"type": "string"}}, "opinion": {"type": "string", "description": "Your own opinion on the protagonist of the story."}, "rating": {"type": "number", "description": "Rating out of 100 on the protagonist of the story."}}, "required": ["message", "sources", "opinion", "rating"], "additionalProperties": false}}}
+response: Leon baut sein Netzwerk vor allem durch folgende Aktivitäten aus:
+
+- **Teilnahme an Fachveranstaltungen:** Er besucht Konferenzen, Meetups und Workshops im Bereich Künstliche Intelligenz und Softwareentwicklung. Dort tauscht er sich mit Experten und Gleichgesinnten aus, lernt neue Trends kennen und knüpft wertvolle Kontakte.
+
+- **Engagement in Communities:** Leon beteiligt sich aktiv in Online-Foren, Entwicklergruppen und Social-Media-Kanälen (z.B. GitHub, LinkedIn). So bleibt er immer am Puls der Zeit und kann von anderen lernen.
+
+- **Praktische Zusammenarbeit:** Durch Praktika, Projekte und Teamarbeit sammelt er direkte Arbeitserfahrung und vernetzt sich mit Kolleg:innen aus der Branche.
+
+- **Mentoring und Unterstützung:** Er sucht gezielt Mentor:innen und bietet selbst Unterstützung für Einsteiger an – ein effektiver Weg, um dauerhaft Beziehungen aufzubauen und sein Netzwerk zu stärken.
+
+Dadurch gewinnt Leon nicht nur technisches Wissen, sondern auch wichtige Soft Skills wie Kommunikation, Teamfähigkeit und Networking-Kompetenz. Dieses Netzwerk erleichtert ihm den Zugang zu Jobchancen, Projektpartnern und Innovationsimpulsen. 
+
+Falls du weitere Details möchtest, kann ich gern noch mehr konkretisieren!

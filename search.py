@@ -1,21 +1,23 @@
 import json
-import db
 from colorama import Fore
 from chromadb import QueryResult
 from chromadb.api.types import Document
 from typing import (
-    Union,
     Any,
     List,
     Optional
 )
+import db
+from config import Config
+from api.logger import log_event
 
 class SearchEngine:
-    def __init__(self, db_manager: db.DBManager) -> None:
+    def __init__(self, config: Config, db_manager: db.DBManager) -> None:
+        self.config = config
         self.db_manager = db_manager
         self.collection = self.db_manager.get_collection()
     
-    def jsonify_results(self, result: QueryResult, key: str) -> Union[dict, list[dict]]:
+    def jsonify_results(self, result: QueryResult, key: str) -> List:
         data = result.get(key, None)
         if data:
             json_strs = data[0]
@@ -23,9 +25,9 @@ class SearchEngine:
             if len(json_strs) > 1:
                 return [json.loads(string) for string in json_strs]
             else:
-                return json.loads(json_strs[0])
+                return []
         else:
-            return {}
+            return []
     
     def clean_results(self, result: QueryResult) -> dict[str, Any]:
         return {
@@ -61,9 +63,10 @@ class SearchEngine:
         token_per_word = 1 / (3/4)
         return len(text.split()) * token_per_word
     
-    def limit_by_tokens(self, results: QueryResult, max_tokens: int) -> QueryResult:
+    def filter_by_tokens(self, results: QueryResult, max_tokens: int) -> QueryResult:
         documents = results["documents"] or [[]]
         distances = results["distances"] or [[]]
+        metadatas = results["metadatas"] or [[]]
         ids = results.get("ids", [[]])
         
         tokens_used = 0
@@ -82,22 +85,39 @@ class SearchEngine:
             for _ in range(loop_count):
                 documents[0].pop(cutoff_iteration)
                 distances[0].pop(cutoff_iteration)
+                metadatas[0].pop(cutoff_iteration)
                 ids[0].pop(cutoff_iteration)
         else:
             pass
         return results
     
-    @db.log_event("Searching in collection")
+    def filter_by_distance(self, results: QueryResult, max_distance: float) -> QueryResult:
+        # I genuinely don't know how to do this. This is ugly as fuck
+        distances = results.get("distances") or [[]]
+        documents = results.get("documents") or [[]]
+        ids = results.get("ids") or [[]]
+        metadatas = results.get("metadatas") or [[]]
+
+        for i in reversed(range(len(distances[0]))):
+            if distances[0][i] > max_distance:
+                distances[0].pop(i)
+                documents[0].pop(i)
+                ids[0].pop(i)
+                metadatas[0].pop(i)
+            else:
+                continue
+        return results
+    
+    @log_event("Searching in collection")
     def search_collection(
         self,
         *query: str,
-        max_tokens: int = 2048,
         strict_search: Optional[str] = None,
         filter_key: Optional[dict] = None
     ) -> QueryResult:
         query_args = {
             "query_texts": list(query),
-            "n_results": 64
+            "n_results": self.config.search_max_results
         }
         
         if strict_search:
@@ -106,7 +126,9 @@ class SearchEngine:
             query_args["where"] = filter_key
         
         results = self.collection.query(
-            query_texts=list(query),
-            n_results=64
+            query_texts=query_args["query_texts"],
+            n_results=query_args["n_results"]
         )
-        return self.limit_by_tokens(results, max_tokens)
+        
+        filtered_results = self.filter_by_distance(results=results, max_distance=self.config.search_max_distance)
+        return self.filter_by_tokens(results=filtered_results, max_tokens=self.config.search_max_tokens)
