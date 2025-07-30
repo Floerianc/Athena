@@ -10,7 +10,11 @@ from api.types import (
 from db import log_event
 
 class Config:
-    def __init__(self, input_type: 'InputTypes' = InputTypes.AUTO, output_type: 'OutputTypes' = OutputTypes.MD) -> None:
+    def __init__(
+        self, 
+        input_type: 'InputTypes' = InputTypes.AUTO, 
+        output_type: 'OutputTypes' = OutputTypes.MD
+    ) -> None:
         # gpt communication
         self.output_type = output_type
         self.input_type = input_type
@@ -53,6 +57,14 @@ class Config:
     
     @log_event("Checking for config file in root directory...")
     def check_for_cfg(self) -> tuple[str, bool]:
+        """check_for_cfg Checks if the root folder has a config file
+        
+        Checks for any .ini or .cfg files in the root folder
+        and returns a boolean and its path
+        
+        Returns:
+            tuple[str, bool]: Path to the config file and boolean
+        """
         files = os.listdir("./")
         for file in files:
             if ".ini" in file or ".cfg" in file:
