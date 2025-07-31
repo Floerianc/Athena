@@ -9,12 +9,13 @@
 #         a pure string prompt                                      (X)
 #       - Add full support for structured outputs                   (X)
 #       - Add support for max_tokens                                (X)
-# TODO: Cool CLI                                                    (MID PRIORITY)
+# TODO: Cool CLI                                                    (WORKING ON...)
+# TODO:     - Cool initialisation with progress bars and shiii      (WORKING ON...)
 # TODO: Delete old collection before loading new one                (X)
 # TODO: More logging                                                (X)
-# TODO: Major code clean-up                                         (VERY HIGH PRIORITY)
+# TODO: Major code clean-up                                         (WORKING ON...)
 # TODO: Colorama color                                              (X)
-# TODO: Code comments and docs                                      (VERY HIGH PRIORITY)
+# TODO: Code comments and docs                                      (X) (For now!)
 # TODO: README File                                                 (X) (For now!)
 # TODO: More Configs                                                (X)
 # TODO: Better Error handling                                       (MID PRIORITY)
@@ -34,9 +35,11 @@
 #               - Allows chunking text:
 #                   - Lengthens text to specific length
 #                   - Shortens text to specific length
-#           TODO: Try with long single lines (shorten_doc())
+#           Try with long single lines (shorten_doc())              (X)
 #           Markdown: Per chapter
-#           PDF: Per Page
+# TODO:     PDF: Per Page                                           (WORKING ON..)
+# TODO:         - For some reason not same output as plain .txt
+
 # TODO: Support max_tokens for input AND output                     (HIGH PRIORITY)
 # TODO: Improve summarization (shorten_data)                        (HIGH PRIORITY)
 #           Idea: Do it for each individually with a fast model

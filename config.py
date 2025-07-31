@@ -7,7 +7,6 @@ from api.types import (
     OutputHeaders,
     TextParsings
 )
-from db import log_event
 
 class Config:
     def __init__(
@@ -24,15 +23,15 @@ class Config:
         # .txt parsing
         self.txt_parseing = TextParsings.AUTO
         self.enforce_uniform_chunks: bool = True
-        self.parse_chunk_size = 512
+        self.parse_chunk_size = 512     # chars
         
         # memory management
         self.max_entries = 5
         self.max_search_results = 3
-        self.tokens_per_memory = 200
+        self.tokens_per_memory = 200    # tokens
         
         # searching chromadb
-        self.search_max_tokens = 2048
+        self.search_max_tokens = 2048   # tokens
         self.search_max_distance = 1.2
         self.search_max_results = 96
         
@@ -55,7 +54,6 @@ class Config:
             "store": self.response.store
         }
     
-    @log_event("Checking for config file in root directory...")
     def check_for_cfg(self) -> tuple[str, bool]:
         """check_for_cfg Checks if the root folder has a config file
         
@@ -71,7 +69,6 @@ class Config:
                 return (file, True)
         return ("", False)
     
-    @log_event("Found config file, loading values from config...")
     def load_values(self) -> None:
         self.response.model             = self.parser.get("Response", "ModelName")
         self.response.temperature       = self.parser.getfloat("Response", "Temperature")
@@ -80,11 +77,11 @@ class Config:
         self.response.store             = self.parser.getboolean("Response", "Store")
         
         self.parse_chunk_size           = self.parser.getint("Parsing", "TextParsingChunkSize")
-        self.parse_chunk_size           = self.parser.getboolean("Parsing", "EnforceUniformChunks")
+        self.enforce_uniform_chunks     = self.parser.getboolean("Parsing", "EnforceUniformChunks")
         
         self.max_entries                = self.parser.getint("Memory", "Entries")
         self.tokens_per_memory          = self.parser.getint("Memory", "TokensPerMemory")
-        self.max_search_results          = self.parser.getint("Memory", "SearchResults")
+        self.max_search_results         = self.parser.getint("Memory", "SearchResults")
         
         self.search_max_tokens          = self.parser.getint("Search", "MaxTokens")
         self.search_max_distance        = self.parser.getfloat("Search", "MaxDistance")

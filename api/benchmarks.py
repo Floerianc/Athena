@@ -10,7 +10,6 @@ from colorama import (
     Style
 )
 from datetime import datetime
-from typing import List
 import api.utils as utils
 from config import Config
 from db import DBManager

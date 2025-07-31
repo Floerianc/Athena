@@ -64,17 +64,4 @@ def main_loop() -> None:
 
 
 if __name__ == "__main__":
-    config = Config(InputTypes.AUTO, OutputTypes.PLAIN)
-    settings = Settings(
-        timestamp=time.time(),
-        models=["gpt-4.1-mini", "gpt-4.1-nano"],
-        input_file="C:\\Users\\stege.DESKTOP-VOI4DSV\\Desktop\\vir\\Athena_Full\\Athena\\dumps\\test.json",
-        user_inputs=[
-            "Wie geht es dir?", 
-            "Erkläre mir, wie Leon seinen Erfolg findet", 
-            "Was braucht ein Schaf, um zu leben?"
-        ]
-    )
-    db = DBManager(config)
-    bm = Benchmark(processor, config, settings, db)
-    bm.main()
+    main_loop()

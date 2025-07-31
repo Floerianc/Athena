@@ -5,6 +5,7 @@ from chromadb.api.types import (
     Document,
     Documents
 )
+from PyPDF2 import PdfReader
 from typing import (
     List,
     Any,
@@ -128,7 +129,8 @@ class Processor:
         Returns:
             List[str]: List of strings
         """
-        return [line.strip() for line in content.splitlines() if line.strip()]
+        print("Parsing by blank")
+        return [line for line in content.splitlines() if line.strip()]
     
     @log_event("Parsing text by newlines...")
     def parse_by_newline(self, content: str) -> List[str]:
@@ -173,12 +175,16 @@ class Processor:
             i = i1() if i1() <= length else length
             chunk = content[i0:i]
             output_lines.append(chunk)
+            i0 = i
             if i >= length:
                 break
         return output_lines
     
     @log_event("Turning text file into documents...")
-    def txt_to_documents(self) -> Documents:
+    def txt_to_documents(
+        self, 
+        filter_method: TextParsings, content: str
+    ) -> Documents:
         """txt_to_documents Converts text to Documents
 
         This method converts a plain text file into
@@ -190,10 +196,6 @@ class Processor:
         Returns:
             Documents: List of Strings for the database
         """
-        filter_method = self.config.txt_parseing
-        with open(os.path.realpath(self.filename), "r", encoding="UTF-8") as file:
-            content = file.read()
-        
         # holy shit this is ugly
         match filter_method:
             case TextParsings.AUTO:
@@ -344,6 +346,17 @@ class Processor:
                 continue
         return content
     
+    def pdf_to_documents(self) -> Documents:
+        reader = PdfReader(self.filename)
+        docs = [page.extract_text() for page in reader.pages]
+        
+        parsing_type = self.config.txt_parseing
+        docs = "\n".join(docs)
+        return self.txt_to_documents(
+            filter_method=parsing_type,
+            content=docs
+        )
+    
     def validate_json(self) -> None:
         """validate_json Validates JSON input data
 
@@ -360,12 +373,22 @@ class Processor:
         Validates the Plain-text input data and then upserts it into
         the ChromaDB database.
         """
-        self.data = self.txt_to_documents()
+        filter_method = self.config.txt_parseing
+        with open(os.path.realpath(self.filename), "r", encoding="UTF-8") as file:
+            content = file.read()
+        
+        self.data = self.txt_to_documents(
+            filter_method=filter_method, 
+            content=content
+        )
         if self.config.enforce_uniform_chunks:
             self.data = self.normalize_document_lengths(self.data)
     
     def validate_md(self) -> None:
         pass
+    
+    def validate_pdf(self) -> None:
+        self.data = self.pdf_to_documents()
     
     @log_event("Validating input file...")
     def validate_input(self) -> None:
@@ -390,6 +413,8 @@ class Processor:
                 self.validate_txt()
             case InputTypes.MD:
                 self.validate_md()
+            case InputTypes.PDF:
+                self.validate_pdf()
     
     def _convert_nested_attr(
         self, 
@@ -495,10 +520,11 @@ class Processor:
 
 if __name__ == "__main__":
     c = Config(InputTypes.PLAIN, OutputTypes.PLAIN)
+    c.parse_chunk_size = 100
     p = Processor(
         db=db.DBManager(config=c),
         config=c,
         filename='dumps/test.txt',
-        insert_json=True
+        insert_json=False
     )
     print(p.data)

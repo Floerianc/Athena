@@ -78,6 +78,7 @@ class InputTypes(Enum):
     PLAIN   = "txt"
     JSON    = "json"
     MD      = "md"
+    PDF     = "pdf"
 
 
 class QueryData:

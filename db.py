@@ -152,7 +152,7 @@ def _verify_chromadb_path(path: str) -> bool:
                 return False
     return True
 
-@log_event("Deleting chroma database")
+
 def annihilate_db() -> None:
     """annihilate_db Deletes the entire database
 
