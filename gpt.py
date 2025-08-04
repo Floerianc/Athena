@@ -216,7 +216,7 @@ class GPTQuery:
             try:
                 return json.loads(rsp.output_text)
             except json.JSONDecodeError:
-                db.log_event(
+                log_event(
                     f"JSON decoding failed. Mayhaps not sufficient tokens\n"
                     f"(max_output_tokens={self.config.response.max_output_tokens}). Returning plain-text instead!"
                 )
