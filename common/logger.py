@@ -1,14 +1,15 @@
 import logging
 from typing import Callable
+from Athena import _log_path
 
 logging.basicConfig(
-    filename="./logs/log.log",
+    filename=_log_path,
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s"
 )
 log = logging.getLogger(__name__)
 
-# idk how decorators work i just copied this from somewhere lol
+# IDK how decorators work I just copied this from somewhere lol
 def log_event(msg: str):
     def decorator(func: Callable):
         def wrapper(*args, **kwargs):

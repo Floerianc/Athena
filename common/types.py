@@ -1,11 +1,12 @@
 from enum import Enum
 from dataclasses import (
     dataclass,
-    field
+    field,
 )
 from typing import (
     Union,
     List,
+    TypedDict,
     TYPE_CHECKING
 )
 from chromadb.api.types import QueryResult
@@ -14,8 +15,8 @@ if TYPE_CHECKING:
     pass
 
 class Models(Enum):
-    BEST        = "gpt-4.1"         # Best allrounder. However, also most expensive     ($2   / 1M  tokens)
-    BALANCED    = "gpt-4.1-mini"    # Good allrounder, quite cheap                      ($1.1 / 1M  tokens)
+    BEST        = "gpt-4.1"         # Best all-rounder. However, also most expensive    ($2   / 1M  tokens)
+    BALANCED    = "gpt-4.1-mini"    # Good all-rounder, quite cheap                     ($1.1 / 1M  tokens)
     FASTER      = "gpt-4.1-nano"    # Overall okay, very low latency and price          ($0.1 / 1M  tokens)
     FASTEST     = "gpt-3.5-turbo"   # Affordable and Fastest model, but worst quality   ($0.5 / 1M  tokens)
     REASONING   = "o4-mini"         # Affordable good reasoning model                   ($1.1 / 1M  tokens)
@@ -118,3 +119,17 @@ class BenchmarkResults:
     minTime: float = field(default_factory=float)
     avgTime: float = field(default_factory=float)
     maxTime: float = field(default_factory=float)
+
+
+class MDChapter(TypedDict):
+    level: int
+    index: int
+    content: str
+MDChapters = List[MDChapter]
+
+
+class SetupData(TypedDict):
+    input_type: InputTypes
+    output_type: OutputTypes
+    input_file: str             # full path
+    schema_file: str            # full path

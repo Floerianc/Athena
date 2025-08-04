@@ -15,11 +15,9 @@ from config import Config
 from db import DBManager
 from gpt import GPTQuery
 from search import SearchEngine
-from processor import Processor
-from api.types import (
+from Athena.processor import Processor
+from common.types import (
     QueryData,
-    InputTypes,
-    OutputTypes,
     Settings,
     BenchmarkResults,
     SystemInfo,
@@ -45,7 +43,7 @@ class Benchmark:
         self.console_width = 80
     
     def set_system_info(self) -> None:
-        os = platform.uname()
+        os_name = platform.uname()
         cpu = cpuinfo.get_cpu_info()
         ram = psutil.virtual_memory().total
         python_ver = sys.version_info
@@ -53,7 +51,7 @@ class Benchmark:
         self.system = SystemInfo(
             CPU = f"{cpu['brand_raw']} ({psutil.cpu_count(logical=False)} Cores)",
             RAM = utils.interpret_size(ram),
-            OS = " ".join([os.system, os.release]),
+            OS = " ".join([os_name.system, os_name.release]),
             PY = " ".join([str(python_ver[0]), str(python_ver[1])])
         )
     
@@ -88,7 +86,7 @@ class Benchmark:
         print(f"{'Max search results:'.ljust(key_width)}{self.config.search_max_results}")
         print(f"{'Max search tokens:'.ljust(key_width)}{self.config.search_max_tokens}")
         print(f"{'Tokens per memory:'.ljust(key_width)}{self.config.tokens_per_memory}")
-        print(f"{'Text parsing mode:'.ljust(key_width)}{self.config.txt_parseing}")
+        print(f"{'Text parsing mode:'.ljust(key_width)}{self.config.txt_parsing}")
         print(f"{'Timestamp:'.ljust(key_width)}{self.settings.timestamp}")
         print(f"{'Input file:'.ljust(key_width)}{self.settings.input_file}")
         print(f"{'Models:'.ljust(key_width)}{self.settings.models}")
@@ -159,7 +157,7 @@ class Benchmark:
         
         with open(f"logs/benchmark_{filename}.json", "a") as js:
             for class_instance in classes:
-                json_objs[str(class_instance)] = self.processor.type_to_dict(class_instance)
+                json_objs[str(class_instance)] = self.processor.serializer.type_to_dict(class_instance)
             json.dump(json_objs, js, indent=4)
     
     def main(self) -> None:
@@ -171,27 +169,27 @@ class Benchmark:
         self.start_benchmark()
         self.finalize_benchmark()
     
-    def testing_dummy(self) -> None:
-        c = Config(input_type=InputTypes.AUTO, output_type=OutputTypes.MD)
-        i = "C:\\Users\\stege.DESKTOP-VOI4DSV\\Desktop\\vir\\Athena_Full\\Athena\\dumps\\test.json"
-        s = Settings(time.time(), i, ["Hallo, wie geht's dir?"], ["gpt-4.1-mini", "gpt-4.1-nano"])
-        d = DBManager(c)
-        p = Processor(d, c, i)
-        
-        b = Benchmark(p, c, s, d)
-        
-        b.setup()
-        b.results = BenchmarkResults(
-            timestamps=[(time.time() - 1, time.time())],
-            model_responses=[
-                QueryData(
-                    "Hallo, wie geht es dir?",
-                    {'documents': [["Hello"]]},
-                    "Mir geht es super, danke!"
-                )
-            ],
-            minTime=2,
-            avgTime=2,
-            maxTime=2
-        )
-        b.export_benchmark()
+    # def testing_dummy(self) -> None:
+    #     c = Config(input_type=InputTypes.AUTO, output_type=OutputTypes.MD)
+    #     i = ".\\dumps\\test.json"
+    #     s = Settings(time.time(), i, ["Hallo, wie geht's dir?"], ["gpt-4.1-mini", "gpt-4.1-nano"])
+    #     d = DBManager(c)
+    #     p = Processor(d, c, i)
+    #
+    #     b = Benchmark(p, c, s, d)
+    #
+    #     b.setup()
+    #     b.results = BenchmarkResults(
+    #         timestamps=[(time.time() - 1, time.time())],
+    #         model_responses=[
+    #             QueryData(
+    #                 "Hallo, wie geht es dir?",
+    #                 {'documents': [["Hello"]]},
+    #                 "Mir geht es super, danke!"
+    #             )
+    #         ],
+    #         minTime=2,
+    #         avgTime=2,
+    #         maxTime=2
+    #     )
+    #     b.export_benchmark()
