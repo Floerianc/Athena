@@ -10,19 +10,22 @@ from colorama import (
     Style
 )
 from datetime import datetime
-import api.utils as utils
-from config import Config
-from db import DBManager
-from gpt import GPTQuery
-from search import SearchEngine
+import Athena.common.utils as utils
+from Athena.config import Config
+from Athena import _internal_dir
+from Athena.db import DBManager
+from Athena.gpt import GPTQuery
+from Athena.search import SearchEngine
 from Athena.processor import Processor
-from common.types import (
+from Athena.common.types import (
     QueryData,
     Settings,
     BenchmarkResults,
     SystemInfo,
-    DBInfo
+    DBInfo,
+    InputTypes, OutputTypes
 )
+from Athena.cli.style import DEFAULT_STYLE
 
 CLEAR_STYLE = Style.RESET_ALL
 RESULT_HEADER = " BENCHMARK RESULTS ".center(80, "-")
@@ -60,7 +63,11 @@ class Benchmark:
         file_size = os.stat(self.settings.input_file).st_size
         formatted_file_size = utils.interpret_size(file_size)
         with open(self.settings.input_file, "r") as file:
-            words = len(file.read().split())
+            try:
+                words = len(file.read().split())
+            except:
+                print("Too lazy to add functionality to read PDF file lol")
+                words = -1
         
         self.db_info = DBInfo(
             input_size = formatted_file_size,
@@ -113,7 +120,7 @@ class Benchmark:
                     user_input
                 )
                 query_data = QueryData(user_input, clean_results)
-                gpt_response = GPTQuery(self.db, query_data, self.config, "dumps/schema.json", instant_request=True)
+                gpt_response = GPTQuery(self.db, query_data, self.config, self.settings.schema_path, instant_request=True)
                 
                 end = time.perf_counter()
                 
@@ -148,14 +155,14 @@ class Benchmark:
     def finalize_benchmark(self) -> None:
         self.finalize_times()
         self.show_times()
-        self.export_benchmark()
+        # self.export_benchmark()
     
     def export_benchmark(self) -> None:
         filename = datetime.now().strftime("%Y%m%d-%H%M%S")
         classes = [self.config, self.settings, self.system, self.db_info, self.results]
         json_objs = {}
         
-        with open(f"logs/benchmark_{filename}.json", "a") as js:
+        with open(os.path.join(_internal_dir, f"benchmarks/{filename}.json"), "a") as js:
             for class_instance in classes:
                 json_objs[str(class_instance)] = self.processor.serializer.type_to_dict(class_instance)
             json.dump(json_objs, js, indent=4)
@@ -193,3 +200,48 @@ class Benchmark:
     #         maxTime=2
     #     )
     #     b.export_benchmark()
+
+
+def get_inputs() -> list[str]:
+    inputs = []
+    while True:
+        user_input = input("Input to the model ('exit' to finish): ")
+        if user_input.lower() == "exit":
+            break
+        else:
+            inputs.append(user_input)
+    return inputs
+
+
+if __name__ == "__main__":
+    from Athena.cli.progress import ProgressBar
+    models = [
+        "gpt-4.1",
+        "gpt-4.1-mini",
+        "gpt-4.1-nano",
+    ]
+
+    print(f"{DEFAULT_STYLE.main_color}Check the source code of this benchmark script to change models{CLEAR_STYLE}\nCurrently testing these models: {Fore.CYAN}{models}{CLEAR_STYLE}")
+    input_file = input("Please enter the full path of the input file: ")
+    utils.clear_terminal()
+
+    cfg = Config(InputTypes.AUTO, OutputTypes.MD)
+
+    p1 = ProgressBar(title="Loading DB", description="", steps=5)
+    dbm = DBManager(config=cfg, progress_bar=p1)
+    p1.thread.join()
+
+    prc = Processor(db=dbm, config=cfg, filename=input_file, insert_json=True)
+    settings = Settings(
+        timestamp=time.time(),
+        input_file=input_file,
+        user_inputs=get_inputs(),
+        schema_path=input("Enter the full path to the JSON Schema: "),
+        models=models
+    )
+    b = Benchmark(processor=prc, config=cfg, db=dbm, settings=settings)
+    b.main()
+
+    option = input("Export full benchmark results? (y/n)\n> ")
+    if option.lower() == "y":
+        b.export_benchmark()

@@ -1,28 +1,31 @@
-import os
-import chromadb
 import json
-from chromadb.api import ClientAPI
-from chromadb.api.types import Document, QueryResult
+import os
+from ast import literal_eval
 from datetime import datetime
-from openai import OpenAI
-from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from typing import (
-    List, 
+    List,
     Any,
     Union,
     TYPE_CHECKING
 )
-from ast import literal_eval
-from config import (
-    InputTypes,
+
+from chromadb.api import ClientAPI
+from chromadb.api.types import (
+    Document
+)
+from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
+from openai import OpenAI
+
+import Athena.common.utils as utils
+import chromadb
+from Athena.common.logger import log_event
+from Athena.common.types import (
+    QueryData,
     OutputTypes
 )
-from api.types import (
-    QueryData, 
-    OutputTypes
+from Athena.config import (
+    InputTypes
 )
-from api.logger import log_event
-import api.utils as utils
 
 if TYPE_CHECKING:
     from config import Config
@@ -105,15 +108,15 @@ class GPTMemory:
             responses = self.create_response_dicts(memory, shorten=False)
             memory_strings.append("\n".join(str(rsp) for rsp in responses))
         return "".join(memory_strings)
-    
+
     def _convert_from_string(
-        self, 
+        self,
         docs: list[str]
     ) -> list[Any]:
         """_convert_from_string Converts string to Any
 
         Converts any string to another data type if possible.
-        
+
         This is especially useful because the ChromaDB only stores
         data as strings so if there's a string representing a dictionary
         you can transform the string into a fully functional dictionary.
@@ -130,7 +133,7 @@ class GPTMemory:
             except:
                 continue
         return docs
-    
+
     def filter_responses_by_query(
         self, 
         user_query: str
@@ -410,5 +413,4 @@ if __name__ == "__main__":
             rsp="The capital of France is Paris."
         )
     )
-    
     print(a.stringize_recent_memories)

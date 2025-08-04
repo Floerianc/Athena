@@ -1,28 +1,36 @@
-import os
+import shutil
 import math
 import time
 import sys
+from dataclasses import (
+    dataclass,
+    field
+)
 from threading import Thread
 from colorama import Fore
-import utils
-from style import get_style
+from typing import Optional
+import Athena.common.utils as utils
+from Athena.cli.style import get_style
 
 class ProgressBar:
     def __init__(
         self, 
         title: str,
         description: str = "",
-        color: str = ""
+        steps: int = 5,
+        color: Optional[str] = ""
     ) -> None:
         self.style = get_style(color)
         
-        self.size = os.get_terminal_size()
+        self.size = shutil.get_terminal_size()
         self.width = self.size.columns
         self.progress_width = self.width - 12
         
         self.completed = False
         self.last_progress = 0.0
         self.progress = 0.0
+        self.steps = steps
+        self.step = 0
         
         self.update_time = 0.5
         self.step_time = 0.05
@@ -35,9 +43,13 @@ class ProgressBar:
         
         self.thread = Thread(target=self.thread_loop)
         self.thread.start()
-    
+
+    def advance_step(self):
+        self.step += 1
+        self.set_progress(self.step / self.steps)
+
     def set_progress(self, new: float) -> None:
-        if new > 1.0:
+        if new >= 1.0:
             self.completed = True
             new = 1.0
         self.progress = new
@@ -74,17 +86,32 @@ class ProgressBar:
         print(self.style.main_color+self.title+Fore.RESET)
         print(self.description)
         self.fill()
-    
+
+    def finalize_bar(self) -> None:
+        self.fill()
+        print("")
+
     def thread_loop(self) -> None:
         self.render()
-        while True:
+        while not self.completed:
             if self.last_progress != self.progress:
                 self.fill()
-            
-            if self.progress >= 1.0:
-                break
             time.sleep(self.update_time)
+        self.finalize_bar()
 
+
+@dataclass
+class ProgressMessage:
+    message: str
+    timeout: float
+    style_name: Optional[str] = field(default_factory=str)
+
+    def __post_init__(self):
+        self.style = get_style(self.style_name)
+
+        print(self.style.main_color + self.message + Fore.RESET)
+        time.sleep(self.timeout)
+        return
 
 if __name__ == "__main__":
     p = ProgressBar(

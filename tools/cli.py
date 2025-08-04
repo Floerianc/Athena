@@ -6,8 +6,8 @@ from colorama import (
     Style
 )
 from Athena.cli.style import DEFAULT_STYLE
-import tools.logger as logger
-from common.types import (
+import Athena.common.logger as logger
+from Athena.common.types import (
     InputTypes,
     OutputTypes,
     QueryData,
@@ -15,14 +15,14 @@ from common.types import (
 )
 from Athena.common.utils import clear_terminal
 from Athena import db
-from Athena import gpt
-from Athena import processor
-from Athena import search
 from Athena.config import Config
 from Athena.cli.progress import (
     ProgressMessage,
     ProgressBar,
 )
+from Athena.gpt import GPTQuery
+from Athena.processor.processor import Processor
+from Athena.search import SearchEngine
 
 DEBUG = True
 EXITING_PHRASE = "exiting..."
@@ -68,7 +68,7 @@ def main_loop(user_data: SetupData) -> None:
             user_input
         )
         query_data = QueryData(user_input, clean_results)
-        gpt_response = GPTQuery(db, query_data, config, user_data["schema_file"], instant_request=True)
+        gpt_response = GPTQuery(dbm, query_data, config, user_data["schema_file"], instant_request=True)
         print(gpt_response.response)
         if DEBUG:
             # gpt_response.save_debug()
@@ -90,7 +90,7 @@ if __name__ == "__main__":
         description="Loading ChromaDB, OpenAI client, OpenAI embedding and GPTMemory module.",
         steps=5
     )
-    db = DBManager(config, progress_bar=p)
+    dbm = db.DBManager(config, progress_bar=p)
     p.thread.join()
 
     # loading processor
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         description="Normalizing document length of input data" if config.input_type != InputTypes.JSON else "Converting JSON to strings",
         steps=1
     )
-    processor = Processor(db, config, filename=data["input_file"], insert_json=True, progress_bar=p2)
+    processor = Processor(dbm, config, filename=data["input_file"], insert_json=True, progress_bar=p2)
     p2.thread.join()
 
     # loading search engine
@@ -111,7 +111,7 @@ if __name__ == "__main__":
         message="Loading Search Engine",
         timeout=0.5
     )
-    search_engine = SearchEngine(config, db)
+    search_engine = SearchEngine(config, dbm)
 
     # loading logger
     ProgressMessage(

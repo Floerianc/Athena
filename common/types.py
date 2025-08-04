@@ -93,6 +93,7 @@ class QueryData:
 class Settings:
     timestamp: float
     input_file: str
+    schema_path: str
     user_inputs: List[str]
     models: List[str]
 

@@ -8,9 +8,14 @@ from chromadb.api.models.Collection import Collection
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from datetime import datetime
 from dotenv import load_dotenv
-from typing import TYPE_CHECKING
-from memory import GPTMemory
-from api.logger import log_event
+from typing import (
+    Optional,
+    TYPE_CHECKING
+)
+from Athena.memory import GPTMemory
+from Athena.common.logger import log_event
+from Athena.cli.progress import ProgressBar
+from Athena import _internal_dir
 
 if TYPE_CHECKING:
     from config import Config
@@ -21,19 +26,25 @@ class DBManager:
     @log_event("Loading client, embedding-function and chroma collection")
     def __init__(
         self, 
-        config: 'Config'
+        config: 'Config',
+        progress_bar: Optional[ProgressBar] = None,
     ) -> None:
-        self.client = chromadb.PersistentClient(
-            path = './chromadb'
-        )
+        if progress_bar: progress_bar.advance_step()
+        self.client = chromadb.PersistentClient(path=os.path.join(_internal_dir, "chromadb/"))
+
+        if progress_bar: progress_bar.advance_step()
         self.openai_ef = OpenAIEmbeddingFunction(
             api_key=os.getenv("CHROMA_OPENAI_API_KEY"),
             model_name="text-embedding-3-small"
         )
-        self.openai_client = OpenAI(
-            api_key = os.getenv("CHROMA_OPENAI_API_KEY")
-        )
+
+        if progress_bar: progress_bar.advance_step()
+        self.openai_client = OpenAI(api_key=os.getenv("CHROMA_OPENAI_API_KEY"))
+
+        if progress_bar: progress_bar.advance_step()
         self.collection = self.create_collection()
+
+        if progress_bar: progress_bar.advance_step()
         self.chat_history = GPTMemory(self.client, self.openai_client, self.openai_ef, config)
     
     def get_client(self) -> ClientAPI:
@@ -75,7 +86,7 @@ class DBManager:
         )
     
     @log_event("Upserting JSON-data into collection")
-    def _insert_json(
+    def insert_json(
         self, 
         json_obj: list[dict]
     ) -> None:
@@ -93,9 +104,9 @@ class DBManager:
             documents = docs,
             metadatas = json_obj if type(json_obj) is dict else None
         )
-    
-    def _load_json(
-        self, 
+
+    def load_json(
+        self,
         filename: str
     ) -> list:
         """_load_json Loads the content of a JSON
@@ -152,7 +163,7 @@ def _verify_chromadb_path(path: str) -> bool:
                 return False
     return True
 
-
+@log_event("Deleting every database")
 def annihilate_db() -> None:
     """annihilate_db Deletes the entire database
 
@@ -160,11 +171,11 @@ def annihilate_db() -> None:
     location of the database so it doesn't accidentally delete
     any other important folders.
     
-    NOTE: The default folder path is ./chromadb/
+    NOTE: The default folder path is ./_internal/chromadb/
     """
-    path = './chromadb/'
+    path = _internal_dir
     if _verify_chromadb_path(path):
         try:
             shutil.rmtree(path)
         except:
-            return
+            raise FileNotFoundError("ChromaDB folder does not exist")

@@ -1,9 +1,8 @@
-import os
 import json
 from dotenv import load_dotenv
 from datetime import datetime
 from typing import (
-    Union, 
+    Union,
     Optional,
     List
 )
@@ -11,17 +10,17 @@ from chromadb.api.types import (
     Document,
     Documents
 )
-import db
-from api.logger import log_event
-from api.types import QueryData
-from config import *
+from Athena.db import DBManager
+from Athena.common.logger import log_event
+from Athena.common.types import QueryData
+from Athena.config import *
 
 load_dotenv()
 
 class GPTQuery:
     def __init__(
         self,
-        db: db.DBManager,
+        db: DBManager,
         data: QueryData,
         config: Config,
         schema_path: Optional[str] = None, 
@@ -68,7 +67,7 @@ class GPTQuery:
         Returns:
             str: Prompt body content
         """
-        json_schema: str = ""
+        json_schema = ""
         
         if self.config.output_type == OutputTypes.JSON:
             json_schema = self._stringize_prompt_schema()
@@ -159,6 +158,7 @@ class GPTQuery:
         Returns:
             dict: _description_
         """
+        path = os.path.realpath(path)
         if os.path.exists(path):
             try:
                 with open(path, "r") as j:
@@ -176,7 +176,7 @@ class GPTQuery:
         """new_response Sends a request to OpenAI
 
         Sends a request to the in the config file defined OpenAI model.
-        It loads a the necessary OpenAI client params from config and 
+        It loads the necessary OpenAI client params from config and
         imports relevant memories from past interactions.
         
         Additionally, the add_to_memory parameter determines if the method
@@ -235,7 +235,7 @@ class GPTQuery:
         * prompt header
         * prompt body content
         * json schema
-        * model reponse
+        * model response
         """
         debug_info = {
             'query': self.data.query,

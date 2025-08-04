@@ -5,11 +5,12 @@ from chromadb.api.types import Document
 from typing import (
     Any,
     List,
+    Dict,
     Optional
 )
-import db
-from config import Config
-from api.logger import log_event
+import Athena.db as db
+from Athena.config import Config
+from Athena.common.logger import log_event
 
 class SearchEngine:
     def __init__(
@@ -49,7 +50,7 @@ class SearchEngine:
             List: Converted list
         """
         data = result.get(key, None)
-        if data:
+        if data and isinstance(data, list):
             json_strs = data[0]
             
             if len(json_strs) >= 1:
@@ -247,7 +248,7 @@ class SearchEngine:
         Returns:
             QueryResult: Search results
         """
-        query_args = {
+        query_args: Dict[str, Any] = {
             "query_texts": list(query),
             "n_results": self.config.search_max_results
         }

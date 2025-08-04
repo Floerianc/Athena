@@ -9,8 +9,21 @@
 #         a pure string prompt                                      (X)
 #       - Add full support for structured outputs                   (X)
 #       - Add support for max_tokens                                (X)
+# TODO: Re-structured entire project to be used as module rather    (X)
+# TODO: than standalone program
+# TODO: Create folder structure on __init__                         (X)
+# TODO: Fixed the directory structure                               (X)
+#       - Removed api/
+#       - Moved api scripts to common/
+#       - Split up Processor into different classes
+#       - Added standalone scripts to tools/
+#           - They shouldn't be used to develop as much, but
+#             rather to play around with the RAG
 # TODO: Cool CLI                                                    (WORKING ON...)
-# TODO:     - Cool initialisation with progress bars and shiii      (WORKING ON...)
+# TODO:     - Added Progress bar and message                        (X)
+# TODO:     - Cool initialisation with progress bars and shiii      (X)
+# TODO:     - Allow no JSON schema                                  (WORKING ON...)
+# TODO:     - Fix problems with path (maybe one _internal dir)      (X)
 # TODO: Delete old collection before loading new one                (X)
 # TODO: More logging                                                (X)
 # TODO: Major code clean-up                                         (WORKING ON...)
@@ -36,9 +49,11 @@
 #                   - Lengthens text to specific length
 #                   - Shortens text to specific length
 #           Try with long single lines (shorten_doc())              (X)
-#           Markdown: Per chapter
-# TODO:     PDF: Per Page                                           (WORKING ON..)
-# TODO:         - For some reason not same output as plain .txt
+#           Markdown: Per chapter                                   (X)
+#               - Parses every (sub)chapter right now
+#               - For future plans check the TODO
+# TODO:     PDF: Per Page                                           (X)
+# TODO:         - For some reason not same output as plain .txt     (X) [Fixed]
 
 # TODO: Support max_tokens for input AND output                     (HIGH PRIORITY)
 # TODO: Improve summarization (shorten_data)                        (HIGH PRIORITY)
@@ -57,16 +72,6 @@
 #       - Dummy Data to test
 #       - BUT: can be heavy on OpenAI tokens!
 
-# externals
-import os
-import sys
-
-os.chdir(
-    os.path.dirname(
-        os.path.realpath(sys.argv[0])
-    )
-)
-
 # Benchmark results:
 #   1. Attempt:
 #       min time: 3.12 s
@@ -80,3 +85,29 @@ os.chdir(
 
 # Token calculation:
 #   Coming soon
+
+
+#############################################################################################################
+
+# building folder structure
+
+import os
+cur_dir = os.getcwd()
+_internal_dir = os.path.join(cur_dir, '_internal')
+_db_dir = os.path.join(_internal_dir, 'chromadb')
+_benchmarks_dir = os.path.join(_internal_dir, 'benchmarks')
+_log_path = os.path.join(_internal_dir, "chromadb.log")
+
+os.chdir(cur_dir)
+try:
+    os.mkdir(_internal_dir)
+    os.mkdir(_db_dir)
+    os.mkdir(_benchmarks_dir)
+except:
+    print("Internal directory and/or chroma database directory already exists. Skipping")
+
+open(_log_path, 'w').close()
+
+
+# imports
+from Athena.config import Config

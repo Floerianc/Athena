@@ -1,6 +1,6 @@
 import os
 from configparser import ConfigParser
-from api.types import (
+from Athena.common.types import (
     InputTypes,
     OutputTypes,
     ResponseConfig,
@@ -21,9 +21,9 @@ class Config:
         self.output_header = OutputHeaders(self.output_type)
         
         # .txt parsing
-        self.txt_parseing = TextParsings.AUTO
+        self.txt_parsing = TextParsings.AUTO
         self.enforce_uniform_chunks: bool = True
-        self.parse_chunk_size = 512     # chars
+        self.parse_chunk_size = 512     # chars --> tokens
         
         # memory management
         self.max_entries = 5
