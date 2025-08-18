@@ -15,7 +15,10 @@ from typing import (
 from Athena.core.memory import GPTMemory
 from Athena.common.logger import log_event
 from Athena.cli.progress import ProgressBar
-from Athena import _internal_dir
+from Athena import (
+    _db_dir,
+    _internal_dir
+)
 
 if TYPE_CHECKING:
     from config import Config
@@ -145,10 +148,11 @@ def _verify_chromadb_path(path: str) -> bool:
     """
     content = os.listdir(path)
     files = [
-        file for file in content if os.path.isfile(os.path.realpath(f"{path}{file}"))
+        file for file in content if os.path.isfile(os.path.join(_db_dir, file))
     ]
     folders = [
-        folder for folder in content if os.path.isdir(os.path.realpath(f"{path}{folder}"))]
+        folder for folder in content if os.path.isdir(os.path.join(_db_dir, folder))
+    ]
     
     if len(files) == 1:
         pass
@@ -173,7 +177,7 @@ def annihilate_db() -> None:
     
     NOTE: The default folder path is ./_internal/chromadb/
     """
-    path = _internal_dir
+    path = _db_dir
     if _verify_chromadb_path(path):
         try:
             shutil.rmtree(path)
