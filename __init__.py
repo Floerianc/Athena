@@ -110,7 +110,7 @@ open(_log_path, 'w').close()
 
 
 # imports
-from Athena.config import Config
+from Athena import *
 
 
 # 2.471 lines

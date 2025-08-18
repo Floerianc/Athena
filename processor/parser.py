@@ -1,6 +1,6 @@
 from PyPDF2 import PdfReader
 from typing import List
-from Athena.config import Config
+from Athena.core.config import Config
 from chromadb import Documents
 from Athena.processor.normalizer import DocumentNormalizer
 from Athena.common.types import (

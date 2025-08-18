@@ -23,7 +23,7 @@ from Athena.common.types import (
     QueryData,
     OutputTypes
 )
-from Athena.config import (
+from Athena.core.config import (
     InputTypes
 )
 

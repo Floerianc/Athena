@@ -10,7 +10,7 @@ from chromadb.api.types import (
 
 from Athena.common.logger import log_event
 from Athena.common.utils import chars_to_tokens
-from Athena.config import Config
+from Athena.core.config import Config
 
 if TYPE_CHECKING:
     from cli.progress import ProgressBar

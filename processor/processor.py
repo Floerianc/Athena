@@ -1,5 +1,5 @@
-from Athena.db import DBManager
-from Athena.config import (
+from Athena.core.db import DBManager
+from Athena.core.config import (
     Config,
     InputTypes,
     OutputTypes

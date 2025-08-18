@@ -8,8 +8,8 @@ from typing import (
     Dict,
     Optional
 )
-import Athena.db as db
-from Athena.config import Config
+import Athena.core.db as db
+from Athena.core.config import Config
 from Athena.common.logger import log_event
 
 class SearchEngine:

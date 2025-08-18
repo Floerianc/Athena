@@ -4,8 +4,8 @@ from typing import (
     Any,
     TYPE_CHECKING
 )
-from Athena.config import Config
-from Athena.db import DBManager
+from Athena.core.config import Config
+from Athena.core.db import DBManager
 from Athena.processor.normalizer import DocumentNormalizer
 from Athena.processor.parser import DocumentParser
 from Athena.common.types import InputTypes

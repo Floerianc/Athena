@@ -12,7 +12,7 @@ from typing import (
     Optional,
     TYPE_CHECKING
 )
-from Athena.memory import GPTMemory
+from Athena.core.memory import GPTMemory
 from Athena.common.logger import log_event
 from Athena.cli.progress import ProgressBar
 from Athena import _internal_dir

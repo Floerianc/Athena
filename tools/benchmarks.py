@@ -11,11 +11,11 @@ from colorama import (
 )
 from datetime import datetime
 import Athena.common.utils as utils
-from Athena.config import Config
+from Athena.core.config import Config
 from Athena import _internal_dir
-from Athena.db import DBManager
-from Athena.gpt import GPTQuery
-from Athena.search import SearchEngine
+from Athena.core.db import DBManager
+from Athena.core.gpt import GPTQuery
+from Athena.core.search import SearchEngine
 from Athena.processor import Processor
 from Athena.common.types import (
     QueryData,

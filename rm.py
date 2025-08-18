@@ -1,1 +1,0 @@
-from db import annihilate_db; annihilate_db()

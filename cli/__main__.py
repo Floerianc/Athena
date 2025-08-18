@@ -15,15 +15,15 @@ from Athena.common.types import (
     SetupData
 )
 from Athena.common.utils import clear_terminal
-from Athena import db
-from Athena.config import Config
+from Athena.core.search import SearchEngine
+from Athena.core import db
+from Athena.core.config import Config
+from Athena.core.gpt import GPTQuery
 from Athena.cli.progress import (
     ProgressMessage,
     ProgressBar,
 )
-from Athena.gpt import GPTQuery
 from Athena.processor.processor import Processor
-from Athena.search import SearchEngine
 
 DEBUG = True
 EXITING_PHRASE = "exiting..."

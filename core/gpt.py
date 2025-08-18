@@ -10,10 +10,10 @@ from chromadb.api.types import (
     Document,
     Documents
 )
-from Athena.db import DBManager
+from Athena.core.db import DBManager
+from Athena.core.config import *
 from Athena.common.logger import log_event
 from Athena.common.types import QueryData
-from Athena.config import *
 
 load_dotenv()
 
