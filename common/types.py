@@ -14,12 +14,14 @@ from chromadb.api.types import QueryResult
 if TYPE_CHECKING:
     pass
 
+
+# Information from https://platform.openai.com/docs/models/compare (last access: 18-08-2025)
 class Models(Enum):
-    BEST        = "gpt-4.1"         # Best all-rounder. However, also most expensive    ($2   / 1M  tokens)
-    BALANCED    = "gpt-4.1-mini"    # Good all-rounder, quite cheap                     ($1.1 / 1M  tokens)
-    FASTER      = "gpt-4.1-nano"    # Overall okay, very low latency and price          ($0.1 / 1M  tokens)
-    FASTEST     = "gpt-3.5-turbo"   # Affordable and Fastest model, but worst quality   ($0.5 / 1M  tokens)
-    REASONING   = "o4-mini"         # Affordable good reasoning model                   ($1.1 / 1M  tokens)
+    BEST        = "gpt-5"           # Best all-rounder. However, also most expensive    ($1.25 / 1M  input-tokens,  $10.00 / 1M output-tokens)
+    BALANCED    = "gpt-5-mini"      # Good all-rounder, quite cheap                     ($0.25 / 1M  input-tokens,  $2.00  / 1M output-tokens)
+    FASTER      = "gpt-5-nano"      # Overall okay, very low latency and price          ($0.05 / 1M  input-tokens,  $0.40  / 1M output-tokens)
+    FASTEST     = "gpt-3.5-turbo"   # Affordable and Fastest model, but worst quality   ($0.50 / 1M  input-tokens,  $1.50  / 1M output-tokens)
+    REASONING   = "o4-mini"         # Affordable good reasoning model                   ($1.10 / 1M  input-tokens,  $4.40  / 1M output-tokens)
 
 
 class TextParsings(Enum):

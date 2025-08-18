@@ -1,6 +1,7 @@
 import argparse
 import os
 from colorama import Fore
+from Athena.cli.style import DEFAULT_STYLE
 from Athena.common.types import (
     InputTypes,
     OutputTypes,
@@ -25,14 +26,20 @@ def setup_parser():
         help="The schema file fed to OpenAI API pipeline for structured outputs."
     )
     parser.add_argument(
-        dest="input_type",
+        "input_type",
         type=str,
         help="Type of input data"
     )
     parser.add_argument(
-        dest="output_type",
+        "output_type",
         type=str,
         help="Type of output text"
+    )
+    parser.add_argument(
+        "--debug",
+        type=bool,
+        default=False,
+        help="Enabling/Disabling DEBUG info when using CLI tool"
     )
     global arguments
     arguments = parser.parse_args()
@@ -54,7 +61,7 @@ def check_arguments() -> None:
     if not is_valid:
         raise BaseException(message)
     else:
-        print(Fore.GREEN + message + Fore.RESET)
+        print(DEFAULT_STYLE.main_color + message + Fore.RESET)
 
 def get_setup_data() -> SetupData:
     check_arguments()

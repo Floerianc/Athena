@@ -166,7 +166,10 @@ class GPTQuery:
             except:
                 raise Exception("Couldn't load JSON file. Check if path is correct.")
         else:
-            raise ValueError(f"Couldn't find file at '{path}'.")
+            if self.config.output_type == OutputTypes.JSON.name:
+                raise ValueError(f"Couldn't find file at '{path}'.")
+            else:
+                return {}
     
     @log_event("Waiting for OpenAI response...")
     def new_response(
