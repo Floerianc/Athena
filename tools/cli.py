@@ -6,6 +6,7 @@ from colorama import (
     Style
 )
 from Athena.cli.style import DEFAULT_STYLE
+from Athena.cli.parser import get_setup_data
 import Athena.common.logger as logger
 from Athena.common.types import (
     InputTypes,
@@ -76,7 +77,8 @@ def main_loop(user_data: SetupData) -> None:
 
 
 if __name__ == "__main__":
-    data = get_data()
+    data = get_setup_data()
+    
     # loading config
     ProgressMessage(
         message="Loading configuration",

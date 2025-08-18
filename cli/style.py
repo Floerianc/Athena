@@ -39,5 +39,4 @@ def get_style(key: str) -> ColorProfile:
     else:
         return Style.MAGENTA.value
 
-
 DEFAULT_STYLE = get_style("")
